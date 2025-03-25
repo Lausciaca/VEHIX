@@ -6,32 +6,23 @@
         <h3 class="fw-bolder">Inicio</h3>
         <button type='button' class="btn btn-dark">Agregar orden</button>
     </div>
-    <div class="my-4 d-flex justify-content-between">
-        <div class="card p-2" style="width: 26rem;">
+    <div class="my-4 d-flex justify-content-between gap-3">
+        <div class="card p-2 w-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <h6 class="card-subtitle text-body-secondary">Ordenes activas</h6>
                     <i class="fa-regular fa-file-lines"></i>
                 </div>
-                <h5 class="card-title fs-2 fw-bold my-2">12</h5>
+                <h5 class="card-title fs-2 fw-bold my-2">{{ordenesActivas}}</h5>
             </div>
         </div>
-        <div class="card p-2" style="width: 26rem;">
+        <div class="card p-2 w-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <h6 class="card-subtitle text-body-secondary">Vehiculos en taller</h6>
                     <i class="fa-solid fa-car-rear"></i>
                 </div>
-                <h5 class="card-title fs-2 fw-bold my-2">10</h5>
-            </div>
-        </div>
-        <div class="card p-2" style="width: 26rem;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <h6 class="card-subtitle text-body-secondary">Ordenes finalizadas en marzo</h6>
-                    <i class="fa-regular fa-file-lines"></i>
-                </div>
-                <h5 class="card-title fs-2 fw-bold my-2">25</h5>
+                <h5 class="card-title fs-2 fw-bold my-2">{{vehiculosTaller}}</h5>
             </div>
         </div>
     </div>
@@ -41,60 +32,28 @@
                 <h5 class="card-title fs-3 fw-bold">Ordenes recientes</h5>
                 <h6 class="card-subtitle text-body-secondary">Gestiona las órdenes de trabajo activas en tu taller</h6>
                 <div class="d-flex justify-content-between mt-3 gap-2">
+                    {% for orden in ordenes %}
                     <div class="card p-1 w-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title fs-6">ORD-2025-00001</h5>
-                                <span class="badge text-bg-secondary">En el taller</span>
+                                <h5 class="card-title fs-6">{{orden.id}}</h5>
+                                <span class="badge text-bg-secondary">{{orden.estado}}</span>
                             </div>
                             <div class="my-2 d-flex flex-column gap-2">
                                 <div class="d-flex flex-column">
                                     <p class="text-body-secondary mb-0">Cliente</p>
-                                    <p class="fw-bold mb-0">Juan Perez</p>                    
+                                    <p class="fw-bold mb-0">{{orden.cliente}}</p>                    
                                 </div>
                                 <div class="d-flex flex-column">
                                     <p class="text-body-secondary mb-0">Vehiculo</p>
-                                    <p class="fw-bold mb-0">Toyota Supra</p>                    
+                                    <p class="fw-bold mb-0">{{orden.vehiculo}}</p>                    
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card p-1 w-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title fs-6">ORD-2025-00001</h5>
-                                <span class="badge text-bg-secondary">En el taller</span>
-                            </div>
-                            <div class="my-2 d-flex flex-column gap-2">
-                                <div class="d-flex flex-column">
-                                    <p class="text-body-secondary mb-0">Cliente</p>
-                                    <p class="fw-bold mb-0">Juan Perez</p>                    
-                                </div>
-                                <div class="d-flex flex-column">
-                                    <p class="text-body-secondary mb-0">Vehiculo</p>
-                                    <p class="fw-bold mb-0">Toyota Supra</p>                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card p-1 w-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title fs-6">ORD-2025-00001</h5>
-                                <span class="badge text-bg-secondary">En el taller</span>
-                            </div>
-                            <div class="my-2 d-flex flex-column gap-2">
-                                <div class="d-flex flex-column">
-                                    <p class="text-body-secondary mb-0">Cliente</p>
-                                    <p class="fw-bold mb-0">Juan Perez</p>                    
-                                </div>
-                                <div class="d-flex flex-column">
-                                    <p class="text-body-secondary mb-0">Vehiculo</p>
-                                    <p class="fw-bold mb-0">Toyota Supra</p>                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% empty %}
+                    <p class="text-body-secondary mb-0">No hay vehiculos</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>

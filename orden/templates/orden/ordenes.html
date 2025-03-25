@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-3">    
+    <div class="header d-flex justify-content-between align-items-center">
+        <div class="texto d-flex flex-column">
+            <h3 class="fw-bolder m-0">Ordenes</h3>
+            <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
+        </div>
+        {% include "orden/modal-create.html" %}
+        <button type='button' class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCrearOrden">Agregar orden</button>
+    </div>
+
+    <div class="busqueda d-flex flex-row gap-3 my-3 justify-content-between">
+        <form method="get" class="d-flex w-100 gap-3">
+            <!-- Búsqueda por cliente o vehículo -->
+            <div class="input-group w-25">
+                <input type="text" class="form-control" name="search" placeholder="Buscar por vehículo o cliente" value="{{ request.GET.search }}">
+                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+
+            <!-- Filtros -->
+            <div class="d-flex w-50">
+                <!-- Filtro por Modalidad -->
+                <div class="input-group me-3">
+                    <label for="filtroCobertura" class="input-group-text">Cobertura</label>
+                    <select id="filtroCobertura" class="form-select" name="modalidad">
+                        <option value="">Seleccionar cobertura</option>
+                        <option value="particular" {% if request.GET.modalidad == "particular" %}selected{% endif %}>Particular</option>
+                        <option value="terceros" {% if request.GET.modalidad == "terceros" %}selected{% endif %}>Contra terceros</option>
+                        <option value="riesgo" {% if request.GET.modalidad == "riesgo" %}selected{% endif %}>Todo riesgo</option>
+                        <option value="recupero" {% if request.GET.modalidad == "recupero" %}selected{% endif %}>Recupero de siniestro</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Estado -->
+                <div class="input-group">
+                    <label for="filtroEstado" class="input-group-text">Estado</label>
+                    <select id="filtroEstado" class="form-select" name="estado">
+                        <option value="">Seleccionar estado</option>
+                        <option value="espera" {% if request.GET.estado == "espera" %}selected{% endif %}>Esperando ingreso</option>
+                        <option value="taller" {% if request.GET.estado == "taller" %}selected{% endif %}>En el taller</option>
+                        <option value="entregado" {% if request.GET.estado == "entregado" %}selected{% endif %}>Entregado</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de órdenes -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Vehículo</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Cobertura</th>
+                <th scope="col">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in ordenes %}
+                <tr>
+                    <th scope="row">{{ orden.id }}</th>
+                    <td>{{ orden.vehiculo }}</td>
+                    <td>{{ orden.cliente }}</td>
+                    <td>{{ orden.get__cobertura__display }}</td>
+                    <td>{{ orden.get_estado_display }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5" class="text-center">No se encontraron órdenes que coincidan con los criterios de búsqueda.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

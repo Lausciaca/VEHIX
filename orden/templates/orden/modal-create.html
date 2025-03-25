@@ -1,0 +1,169 @@
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- jQuery (requerido para los modales de Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCrearOrden" tabindex="-1" aria-labelledby="modalCrearOrdenLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCrearOrdenLabel">Crear Orden</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario de la orden con 3 etapas -->
+        <form id="formCrearOrden" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- Paso 1: Datos del usuario -->
+          <div class="step step-1">
+            <h5>Datos del Usuario</h5>
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="nextStep(2)">Siguiente</button>
+          </div>
+
+          <!-- Paso 2: Datos del vehículo -->
+          <div class="step step-2" style="display:none;">
+            <h5>Datos del Vehículo</h5>
+            <div class="mb-3">
+              <label for="marca" class="form-label">Marca</label>
+              <input type="text" class="form-control" id="marca" name="marca" required>
+            </div>
+            <div class="mb-3">
+              <label for="modelo" class="form-label">Modelo</label>
+              <input type="text" class="form-control" id="modelo" name="modelo" required>
+            </div>
+            <div class="mb-3">
+              <label for="patente" class="form-label">Patente</label>
+              <input type="text" class="form-control" id="patente" name="patente" required>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Anterior</button>
+            <button type="button" class="btn btn-primary" onclick="nextStep(3)">Siguiente</button>
+          </div>
+
+          <!-- Paso 3: Datos de la orden -->
+          <div class="step step-3" style="display:none;">
+            <h5>Datos de la Orden</h5>
+            <div class="mb-3">
+              <label for="cobertura" class="form-label">Cobertura</label>
+              <select id="cobertura" name="cobertura" class="form-select" required>
+                <option value="particular">Particular</option>
+                <option value="terceros">Contra terceros</option>
+                <option value="riesgo">Todo riesgo</option>
+                <option value="recupero">Recupero de siniestro</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="estado" class="form-label">Estado</label>
+              <select id="estado" name="estado" class="form-select" required>
+                <option value="espera">Esperando ingreso</option>
+                <option value="taller">En el taller</option>
+                <option value="entregado">Entregado</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="imagenes" class="form-label">Imágenes</label>
+              <input type="file" class="form-control" id="imagenes" name="imagenes" multiple>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="nextStep(2)">Anterior</button>
+            <button type="submit" class="btn btn-success">Crear Orden</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para manejar las etapas del formulario -->
+<script>
+    // Función para obtener el token CSRF desde el HTML (si estás usando Django o similar)
+    function getCSRFToken() {
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      return csrfToken;
+    }
+  
+    // Manejar el envío del formulario y la solicitud AJAX
+    document.getElementById("formCrearOrden").addEventListener("submit", function(event) {
+      event.preventDefault(); // Evita que se recargue la página al enviar el formulario
+  
+      // Recolectar los datos del formulario
+      const usuarioData = {
+        nombre: document.getElementById("nombre").value,
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value
+      };
+  
+      const vehiculoData = {
+        marca: document.getElementById("marca").value,
+        modelo: document.getElementById("modelo").value,
+        patente: document.getElementById("patente").value
+      };
+  
+      const ordenData = {
+        cobertura: document.getElementById("cobertura").value,
+        estado: document.getElementById("estado").value,
+        imagenes: document.getElementById("imagenes").files
+      };
+  
+      // Crear un objeto FormData para enviar los datos, incluidos los archivos
+      const formData = new FormData();
+      formData.append('nombre', usuarioData.nombre);
+      formData.append('telefono', usuarioData.telefono);
+      formData.append('email', usuarioData.email);
+      formData.append('marca', vehiculoData.marca);
+      formData.append('modelo', vehiculoData.modelo);
+      formData.append('patente', vehiculoData.patente);
+      formData.append('cobertura', ordenData.cobertura);
+      formData.append('estado', ordenData.estado);
+      
+      // Agregar las imágenes seleccionadas al FormData
+      Array.from(ordenData.imagenes).forEach((file, index) => {
+        formData.append(`imagenes[${index}]`, file);
+      });
+  
+      // Obtener el token CSRF para la solicitud
+      const csrfToken = getCSRFToken();
+  
+      // Realizar la solicitud AJAX con fetch
+      fetch('{% url "ordenes-create" %}', {
+        method: 'POST',
+        body: formData, // Cuerpo de la solicitud con los datos del formulario
+        headers: {
+          'X-CSRFToken': csrfToken // Incluir el token CSRF en la cabecera
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Manejo de la respuesta de la solicitud
+        console.log(data);  // Verifica la respuesta en la consola
+        if (data.success) {
+          alert("Orden creada correctamente");
+          $('#modalCrearOrden').modal('hide'); // Cerrar el modal si la orden fue creada correctamente
+          document.getElementById("formCrearOrden").reset(); // Limpiar el formulario
+        } else {
+          alert("Error al crear la orden");
+        }
+      })
+      .catch(error => {
+        alert("Error al enviar los datos");
+        console.error(error); // Mostrar el error en la consola si algo falla
+      });
+    });
+  </script>
+  
