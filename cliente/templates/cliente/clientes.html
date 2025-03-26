@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-3">    
+    <div class="header d-flex justify-content-between align-items-center">
+        <div class="texto d-flex flex-column">
+            <h3 class="fw-bolder m-0">Clientes</h3>
+            <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
+        </div>
+    </div>
+
+    <div class="busqueda ">
+        <form method="get" class="d-flex w-100 gap-3 d-flex justify-content-end">
+            <!-- Búsqueda por cliente o vehículo -->
+            <div class="input-group w-25">
+                <input type="text" class="form-control" name="search" placeholder="Buscar por nombre" value="{{ request.GET.search }}">
+                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de órdenes -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+                <tr>
+                    <th scope="row">{{ cliente.id }}</th>
+                    <td>{{ cliente.nombre }}</td>
+                    <td>{{ cliente.telefono }}</td>
+                    <td>{{ cliente.email }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5" class="text-center">No se encontraron órdenes que coincidan con los criterios de búsqueda.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

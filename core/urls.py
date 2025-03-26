@@ -1,9 +1,10 @@
 from django.urls import path, include
 from . import views
-from orden.views import ordenes, crear_orden
+from orden.urls import ordenpatterns
+from cliente.urls import clientepatterns
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('ordenes', ordenes, name='ordenes'),
-    path('ordenes/create', crear_orden, name='ordenes-create'),
+    path('clientes', include(clientepatterns)),
+    path('ordenes', include(ordenpatterns)),
 ]

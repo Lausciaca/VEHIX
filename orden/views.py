@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from .models import Orden
-from cliente.models import Cliente
-from vehiculo.models import Vehiculo
+from .models import Orden, ImagenVehiculo
 from .forms import OrdenSearchForm
-from django.http import JsonResponse
-
+from django.shortcuts import render, redirect
+from .forms import OrdenForm, ImagenVehiculoForm
+from cliente.forms import ClienteForm
+from vehiculo.forms import VehiculoForm
+from datetime import datetime
 
 
 def ordenes(request):
@@ -24,13 +24,16 @@ def ordenes(request):
         if form.cleaned_data['cobertura']:
             ordenes = ordenes.filter(cobertura=form.cleaned_data['cobertura'])
 
-        # Filtra por cliente si se ha proporcionado el nombre
-        if form.cleaned_data['cliente']:
-            ordenes = ordenes.filter(cliente__nombre__icontains=form.cleaned_data['cliente'])
 
-        # Filtra por vehículo si se ha proporcionado el modelo
-        if form.cleaned_data['vehiculo']:
-            ordenes = ordenes.filter(vehiculo__modelo__icontains=form.cleaned_data['vehiculo'])
+        if form.cleaned_data['search']:
+            ordenes = ordenes.filter(
+                vehiculo__modelo__icontains=form.cleaned_data['search']
+            ) | ordenes.filter(
+                vehiculo__marca__icontains=form.cleaned_data['search']
+            ) | ordenes.filter(
+                cliente__nombre__icontains=form.cleaned_data['search']
+            )
+
 
     return render(request, 'orden/ordenes.html', {
         'ordenes': ordenes,
@@ -38,28 +41,47 @@ def ordenes(request):
     })
 
 
+
+
 def crear_orden(request):
     if request.method == 'POST':
-        # Obtener datos del formulario
-        nombre = request.POST['nombre']
-        telefono = request.POST['telefono']
-        email = request.POST['email']
-        marca = request.POST['marca']
-        modelo = request.POST['modelo']
-        patente = request.POST['patente']
-        cobertura = request.POST['cobertura']
-        estado = request.POST['estado']
-        imagenes = request.FILES.getlist('imagenes')
+        # Instanciamos todos los formularios
+        cliente_form = ClienteForm(request.POST)
+        vehiculo_form = VehiculoForm(request.POST)
+        orden_form = OrdenForm(request.POST)
+        imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
 
-        # Crear el usuario, vehículo y orden
-        cliente = Cliente.objects.create(nombre=nombre, telefono=telefono, email=email)
-        vehiculo = Vehiculo.objects.create(marca=marca, modelo=modelo, patente=patente, usuario=usuario)
-        orden = Orden.objects.create(cobertura=cobertura, estado=estado, vehiculo=vehiculo)
+        # Validamos todos los formularios
+        if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid() and imagen_form.is_valid():
+            # 1️⃣ Crear Cliente
+            cliente = cliente_form.save()
 
-        # Subir las imágenes si es necesario
-        for imagen in imagenes:
-            orden.imagenes.create(imagen=imagen)
+            # 2️⃣ Crear Vehículo
+            vehiculo = vehiculo_form.save()
 
-        return JsonResponse({'success': True})
+            # 3️⃣ Crear la Orden (sin necesidad de generar el código manualmente)
+            orden = orden_form.save(commit=False)
+            orden.cliente = cliente
+            orden.vehiculo = vehiculo
+            orden.save()  # El código se genera automáticamente al guardar
 
-    return JsonResponse({'success': False})
+            # 4️⃣ Guardar imágenes asociadas a la orden
+            if 'imagen' in request.FILES:
+                for img in request.FILES.getlist('imagen'):
+                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
+
+            return redirect('ordenes')  # Redirige a la lista de órdenes
+
+    else:
+        # Si no es un POST, instanciamos formularios vacíos
+        cliente_form = ClienteForm()
+        vehiculo_form = VehiculoForm()
+        orden_form = OrdenForm()
+        imagen_form = ImagenVehiculoForm()
+
+    return render(request, 'orden/crear_orden.html', {
+        'cliente_form': cliente_form,
+        'vehiculo_form': vehiculo_form,
+        'orden_form': orden_form,
+        'imagen_form': imagen_form,
+    })

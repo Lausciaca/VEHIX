@@ -30,10 +30,10 @@
                         <a class="nav-link" href="{% url "index" %}"><i class="fa-regular fa-chart-bar mx-1"></i> Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href=""><i class="fa-regular fa-user mx-1"></i> Clientes</a>
+                        <a class="nav-link" href="{% url 'cliente:list' %}"><i class="fa-regular fa-user mx-1"></i> Clientes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "ordenes" %}"><i class="fa-regular fa-file-lines mx-1"></i> Órdenes</a>
+                        <a class="nav-link" href="{% url "orden:list" %}"><i class="fa-regular fa-file-lines mx-1"></i> Órdenes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fa-solid fa-gear mx-1"></i> Configuración</a>

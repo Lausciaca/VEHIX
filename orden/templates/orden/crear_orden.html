@@ -1,0 +1,29 @@
+
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-3">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Formulario Cliente -->
+        <h3>Crear Cliente</h3>
+        {{ cliente_form.as_p }}  <!-- Se renderiza el formulario de cliente -->
+    
+        <!-- Formulario Vehículo -->
+        <h3>Crear Vehículo</h3>
+        {{ vehiculo_form.as_p }}  <!-- Se renderiza el formulario de vehículo -->
+    
+        <!-- Formulario Orden -->
+        <h3>Crear Orden</h3>
+        {{ orden_form.as_p }}  <!-- Se renderiza el formulario de orden -->
+    
+        <!-- Formulario de Imágenes -->
+        <h3>Agregar Imágenes</h3>
+        {{ imagen_form.as_p }}  <!-- Se renderiza el formulario de imágenes -->
+        
+        <!-- Botón de Enviar -->
+        <button type="submit">Crear Orden</button>
+    </form>    
+</div>
+{% endblock content %}

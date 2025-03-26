@@ -7,8 +7,6 @@
             <h3 class="fw-bolder m-0">Ordenes</h3>
             <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
         </div>
-        {% include "orden/modal-create.html" %}
-        <button type='button' class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCrearOrden">Agregar orden</button>
     </div>
 
     <div class="busqueda d-flex flex-row gap-3 my-3 justify-content-between">
@@ -63,7 +61,7 @@
         <tbody>
             {% for orden in ordenes %}
                 <tr>
-                    <th scope="row">{{ orden.id }}</th>
+                    <th scope="row">{{ orden.codigo }}</th>
                     <td>{{ orden.vehiculo }}</td>
                     <td>{{ orden.cliente }}</td>
                     <td>{{ orden.get__cobertura__display }}</td>

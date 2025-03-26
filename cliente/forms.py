@@ -10,3 +10,6 @@ class ClienteForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
+
+class ClienteSearchForm(forms.Form):
+    search = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
