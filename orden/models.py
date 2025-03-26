@@ -1,6 +1,5 @@
-import datetime
+from datetime import datetime
 from django.db import models
-from django.utils.timezone import now
 from cliente.models import Cliente
 from vehiculo.models import Vehiculo
 
@@ -19,7 +18,6 @@ class Orden(models.Model):
 
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name='Cliente', blank=False)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, verbose_name='Vehiculo', blank=False)
-    imagenes = models.ImageField(upload_to='Imagenes/', verbose_name='Imagenes del vehiculo', blank=True, null=True)
     cobertura = models.CharField(max_length=50, choices=COBERTURAS_CHOICES, verbose_name='Modalidad de cobertura', blank=False)
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -41,8 +39,8 @@ class Orden(models.Model):
         super().save(*args, **kwargs)
 
 class ImagenVehiculo(models.Model):
-    orden = models.ForeignKey(Orden, on_delete=models.CASCADE, related_name='imagenes')
+    orden = models.ForeignKey(Orden, on_delete=models.CASCADE, related_name='imagenes_vehiculo')
     imagen = models.ImageField(upload_to='imagenes_vehiculos/')
 
     def __str__(self):
-        return f'Imagen {self.id} de {self.orden}'
+        return f"Imagen de {self.orden}"

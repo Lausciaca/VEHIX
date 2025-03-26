@@ -1,0 +1,88 @@
+
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-3">
+    <div class="header d-flex justify-content-between align-items-center">
+        <div class="texto d-flex flex-column">
+            <h3 class="fw-bolder m-0">Orden de {{orden.cliente}}</h3>
+            <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
+        </div>
+        <div class="">
+            <a href="{% url 'orden:delete' orden.codigo %}">
+                <button type="button" class="btn btn-danger">Eliminar</button>
+            </a>
+        </div>
+    </div>
+    <div class="d-flex gap-3 flex-column align-items-end mb-5">
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <div class="w-100 d-flex flex-row gap-2">
+                        <div class="w-100">
+                            <label for="id_nombre">Nombre</label>
+                            <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
+                        </div>
+                        <div class="w-100">
+                            <label for="id_nombre">Telefono</label>
+                            <p class="m-0 fw-bold">{{ orden.cliente.telefono }}</p>
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <label for="id_nombre">Email</label>
+                        <p class="m-0 fw-bold">{{ orden.cliente.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
+                <div class="d-flex justify-content-between gap-2">
+                    <div class="w-50">
+                        <label for="id_marca">Marca</label>
+                        <p class="m-0 fw-bold">{{ orden.vehiculo.marca }}</p>
+                    </div>
+                    <div class="w-50">
+                        <label for="id_modelo">Modelo</label>
+                        <p class="m-0 fw-bold">{{ orden.vehiculo.modelo }}</p>
+                    </div>
+                    <div class="w-50">
+                        <label for="id_patente">Patente</label>
+                        <p class="m-0 fw-bold">{{ orden.vehiculo.patente }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Datos de la orden</h5>
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <div class="w-100 d-flex flex-row gap-2">
+                        <div class="w-100">
+                            <label for="id_marca">Cobertura</label>
+                            <p class="m-0 fw-bold">{{ orden.get_cobertura_display }}</p>
+                        </div>
+                        <div class="w-100">
+                            <label for="id_modelo">Estado</label>
+                            <p class="m-0 fw-bold">{{ orden.get_estado_display }}</p>
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <label for="id_imagenes">Imagenes</label>
+                        <div class="w-100">
+                        {% for imagen in imagenes %}
+                            <img src="{{ imagen.imagen.url }}" alt="Imagen de la orden" class="img-fluid rounded">
+                            {% empty %}
+                            <p>No hay imágenes disponibles para esta orden.</p>
+                            {% endfor %}                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

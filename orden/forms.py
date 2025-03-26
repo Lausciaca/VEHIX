@@ -13,7 +13,7 @@ class OrdenSearchForm(forms.Form):
 class OrdenForm(forms.ModelForm):
     class Meta:
         model = Orden
-        fields = ['cliente', 'vehiculo', 'cobertura', 'estado']
+        fields = ['cobertura', 'estado']
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'vehiculo': forms.Select(attrs={'class': 'form-control'}),
@@ -22,9 +22,8 @@ class OrdenForm(forms.ModelForm):
         }
 
 class ImagenVehiculoForm(forms.ModelForm):
+    imagen = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}))  # Permite subir varias imágenes
+
     class Meta:
         model = ImagenVehiculo
-        fields = ['imagen']  # Los campos de las imágenes
-        widgets = {
-            'imagen': forms.ClearableFileInput(attrs={'multiple': True})
-        }
+        fields = ['imagen']

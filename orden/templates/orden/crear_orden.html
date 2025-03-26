@@ -3,27 +3,135 @@
 
 {% block content %}
 <div class="container my-3">
-    <form method="POST" enctype="multipart/form-data">
+    <div class="header d-flex justify-content-between align-items-center">
+        <div class="texto d-flex flex-column">
+            <h3 class="fw-bolder m-0">Nueva orden</h3>
+            <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
+        </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data" class="d-flex gap-3 flex-column align-items-end mb-5">
         {% csrf_token %}
-        
-        <!-- Formulario Cliente -->
-        <h3>Crear Cliente</h3>
-        {{ cliente_form.as_p }}  <!-- Se renderiza el formulario de cliente -->
-    
-        <!-- Formulario Vehículo -->
-        <h3>Crear Vehículo</h3>
-        {{ vehiculo_form.as_p }}  <!-- Se renderiza el formulario de vehículo -->
-    
-        <!-- Formulario Orden -->
-        <h3>Crear Orden</h3>
-        {{ orden_form.as_p }}  <!-- Se renderiza el formulario de orden -->
-    
-        <!-- Formulario de Imágenes -->
-        <h3>Agregar Imágenes</h3>
-        {{ imagen_form.as_p }}  <!-- Se renderiza el formulario de imágenes -->
-        
-        <!-- Botón de Enviar -->
-        <button type="submit">Crear Orden</button>
-    </form>    
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <div class="w-100 d-flex flex-row gap-2">
+                        <div class="w-100">
+                            <label for="id_nombre">Nombre</label>
+                            {{ cliente_form.nombre }}
+                        </div>
+                        <div class="w-100">
+                            <label for="id_nombre">Telefono</label>
+                            {{ cliente_form.telefono }}
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <label for="id_nombre">Email</label>
+                        {{ cliente_form.email }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
+                <div class="d-flex justify-content-between gap-2">
+                    <div class="w-50">
+                        <label for="id_marca">Marca</label>
+                        {{ vehiculo_form.marca }}
+                    </div>
+                    <div class="w-50">
+                        <label for="id_modelo">Modelo</label>
+                        {{ vehiculo_form.modelo }}
+                    </div>
+                    <div class="w-50">
+                        <label for="id_patente">Patente</label>
+                        {{ vehiculo_form.patente }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Datos de la orden</h5>
+                <div class="d-flex justify-content-between flex-wrap">
+                    <div class="w-100 d-flex flex-row gap-2">
+                        <div class="w-100">
+                            <label for="id_marca">Cobertura</label>
+                            {{ orden_form.cobertura }}
+                        </div>
+                        <div class="w-100">
+                            <label for="id_modelo">Estado</label>
+                            {{ orden_form.estado }}
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <label for="id_imagen">Imágenes</label>
+                        <div id="dropzone" class="border border-primary border-dashed p-5 text-center rounded">
+                            <p id="dropzone-text" class="mb-0">Arrastra y suelta imágenes aquí o <span class="text-primary">haz clic para subir</span></p>
+                            <input type="file" id="id_imagen" name="imagen" class="d-none" multiple accept="image/*">
+                        </div>
+                    </div>                                
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-25">Crear Orden</button>
+    </form>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let dropzone = document.getElementById("dropzone");
+        let fileInput = document.getElementById("id_imagen");
+        let dropzoneText = document.getElementById("dropzone-text");
+
+        // Evitar comportamiento predeterminado del navegador
+        ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+            dropzone.addEventListener(eventName, function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+        });
+
+        // Cambia el estilo cuando se arrastra un archivo encima
+        dropzone.addEventListener("dragover", function () {
+            dropzone.classList.add("bg-light");
+        });
+
+        dropzone.addEventListener("dragleave", function () {
+            dropzone.classList.remove("bg-light");
+        });
+
+        // Manejo de archivos soltados
+        dropzone.addEventListener("drop", function (event) {
+            dropzone.classList.remove("bg-light");
+            let files = event.dataTransfer.files;
+            fileInput.files = files; // Asigna los archivos al input
+            actualizarVista(files);
+        });
+
+        // Abre el explorador de archivos al hacer clic
+        dropzone.addEventListener("click", function () {
+            fileInput.click();
+        });
+
+        // Cuando se seleccionan archivos desde el explorador
+        fileInput.addEventListener("change", function () {
+            actualizarVista(fileInput.files);
+        });
+
+        // Función para actualizar la vista con los archivos seleccionados
+        function actualizarVista(files) {
+            if (files.length > 0) {
+                let nombresArchivos = Array.from(files).map(file => file.name).join(", ");
+                dropzoneText.innerHTML = `<p class="mb-0 text-success">Archivos seleccionados: ${nombresArchivos}</p>`;
+            } else {
+                dropzoneText.innerHTML = `Arrastra y suelta imágenes aquí o <span class="text-primary">haz clic para subir</span>`;
+            }
+        }
+    });
+</script>
+
+
 {% endblock content %}

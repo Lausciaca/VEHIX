@@ -1,10 +1,10 @@
 from .models import Orden, ImagenVehiculo
 from .forms import OrdenSearchForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import OrdenForm, ImagenVehiculoForm
 from cliente.forms import ClienteForm
 from vehiculo.forms import VehiculoForm
-from datetime import datetime
+from django.contrib import messages
 
 
 def ordenes(request):
@@ -43,37 +43,34 @@ def ordenes(request):
 
 
 
+
 def crear_orden(request):
     if request.method == 'POST':
-        # Instanciamos todos los formularios
         cliente_form = ClienteForm(request.POST)
         vehiculo_form = VehiculoForm(request.POST)
         orden_form = OrdenForm(request.POST)
         imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
 
-        # Validamos todos los formularios
-        if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid() and imagen_form.is_valid():
-            # 1️⃣ Crear Cliente
+        if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
+            # Crear cliente
             cliente = cliente_form.save()
 
-            # 2️⃣ Crear Vehículo
+            # Crear vehículo
             vehiculo = vehiculo_form.save()
 
-            # 3️⃣ Crear la Orden (sin necesidad de generar el código manualmente)
+            # Crear orden
             orden = orden_form.save(commit=False)
             orden.cliente = cliente
             orden.vehiculo = vehiculo
-            orden.save()  # El código se genera automáticamente al guardar
+            orden.save()
 
-            # 4️⃣ Guardar imágenes asociadas a la orden
-            if 'imagen' in request.FILES:
-                for img in request.FILES.getlist('imagen'):
-                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
+            # Guardar imágenes de vehículo (manejo de múltiples archivos)
+            for img in request.FILES.getlist('imagen'):  # Iterar sobre las imágenes
+                ImagenVehiculo.objects.create(orden=orden, imagen=img)
 
-            return redirect('ordenes')  # Redirige a la lista de órdenes
+            return redirect('orden:list')  # Redirigir a alguna página de éxito
 
     else:
-        # Si no es un POST, instanciamos formularios vacíos
         cliente_form = ClienteForm()
         vehiculo_form = VehiculoForm()
         orden_form = OrdenForm()
@@ -85,3 +82,30 @@ def crear_orden(request):
         'orden_form': orden_form,
         'imagen_form': imagen_form,
     })
+
+
+def ver_orden(request, codigo):
+    
+    orden = get_object_or_404(Orden, codigo=codigo)
+    imagenes = orden.imagenes_vehiculo.all()
+    
+    return render(request, 'orden/ver_orden.html', {'orden':orden, 'imagenes':imagenes})
+
+
+def eliminar_orden(request, codigo):
+    try:
+        # Obtener la orden por código
+        orden = Orden.objects.get(codigo=codigo)
+
+        # Eliminar la orden
+        orden.delete()
+
+        # Mensaje de éxito
+        messages.success(request, f"La orden {codigo} ha sido eliminada con éxito.")
+
+    except Orden.DoesNotExist:
+        # Si la orden no existe
+        messages.error(request, "La orden que intentas eliminar no existe.")
+
+    # Redirigir a una página de lista o donde se gestione la visualización de las órdenes
+    return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes

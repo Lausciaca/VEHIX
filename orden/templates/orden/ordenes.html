@@ -22,12 +22,12 @@
                 <!-- Filtro por Modalidad -->
                 <div class="input-group me-3">
                     <label for="filtroCobertura" class="input-group-text">Cobertura</label>
-                    <select id="filtroCobertura" class="form-select" name="modalidad">
+                    <select id="filtroCobertura" class="form-select" name="cobertura">
                         <option value="">Seleccionar cobertura</option>
-                        <option value="particular" {% if request.GET.modalidad == "particular" %}selected{% endif %}>Particular</option>
-                        <option value="terceros" {% if request.GET.modalidad == "terceros" %}selected{% endif %}>Contra terceros</option>
-                        <option value="riesgo" {% if request.GET.modalidad == "riesgo" %}selected{% endif %}>Todo riesgo</option>
-                        <option value="recupero" {% if request.GET.modalidad == "recupero" %}selected{% endif %}>Recupero de siniestro</option>
+                        <option value="particular" {% if request.GET.cobertura == "particular" %}selected{% endif %}>Particular</option>
+                        <option value="terceros" {% if request.GET.cobertura == "terceros" %}selected{% endif %}>Contra terceros</option>
+                        <option value="riesgo" {% if request.GET.cobertura == "riesgo" %}selected{% endif %}>Todo riesgo</option>
+                        <option value="recupero" {% if request.GET.cobertura == "recupero" %}selected{% endif %}>Recupero de siniestro</option>
                     </select>
                 </div>
 
@@ -54,8 +54,8 @@
                 <th scope="col">#</th>
                 <th scope="col">Vehículo</th>
                 <th scope="col">Cliente</th>
-                <th scope="col">Cobertura</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -64,8 +64,8 @@
                     <th scope="row">{{ orden.codigo }}</th>
                     <td>{{ orden.vehiculo }}</td>
                     <td>{{ orden.cliente }}</td>
-                    <td>{{ orden.get__cobertura__display }}</td>
                     <td>{{ orden.get_estado_display }}</td>
+                    <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
             {% empty %}
                 <tr><td colspan="5" class="text-center">No se encontraron órdenes que coincidan con los criterios de búsqueda.</td></tr>
