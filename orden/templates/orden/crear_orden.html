@@ -53,25 +53,12 @@
         </div>
         <div class="card p-2 w-100">
             <div class="card-body">
-                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Datos de la orden</h5>
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Imagenes del vehiculo</h5>
                 <div class="d-flex justify-content-between flex-wrap">
-                    <div class="w-100 d-flex flex-row gap-2">
-                        <div class="w-100">
-                            <label for="id_marca">Cobertura</label>
-                            {{ orden_form.cobertura }}
-                        </div>
-                        <div class="w-100">
-                            <label for="id_modelo">Estado</label>
-                            {{ orden_form.estado }}
-                        </div>
+                    <div id="dropzone" class="border border-primary border-dashed p-5 text-center rounded w-100">
+                        <p id="dropzone-text" class="mb-0">Arrastra y suelta imágenes aquí o <span class="text-primary">haz clic para subir</span></p>
+                        <input type="file" id="id_imagen" name="imagen" class="d-none" multiple accept="image/*">
                     </div>
-                    <div class="w-100">
-                        <label for="id_imagen">Imágenes</label>
-                        <div id="dropzone" class="border border-primary border-dashed p-5 text-center rounded">
-                            <p id="dropzone-text" class="mb-0">Arrastra y suelta imágenes aquí o <span class="text-primary">haz clic para subir</span></p>
-                            <input type="file" id="id_imagen" name="imagen" class="d-none" multiple accept="image/*">
-                        </div>
-                    </div>                                
                 </div>
             </div>
         </div>

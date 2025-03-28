@@ -1,12 +1,8 @@
 from django.contrib import admin
-from .models import Orden
+from .models import *
 
-# Register your models here.
-class OrdenAdmin(admin.ModelAdmin):
-    # Permite la búsqueda por ciertos campos
-    search_fields = ['cliente__nombre', 'estado', 'vehiculo__modelo']
-
-    # Permite filtrar por ciertos campos en la lista de objetos
-    list_filter = ['estado', 'cobertura']
-
-admin.site.register(Orden, OrdenAdmin)
+admin.site.register(OrdenParticular)
+admin.site.register(OrdenTerceros)
+admin.site.register(OrdenRiesgo)
+admin.site.register(OrdenRecupero)
+admin.site.register(ImagenVehiculo)

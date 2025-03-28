@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container d-flex gap-2">
+    <div class="card">
+        <a href="{% url 'orden:create' %}?particular">particular</a>
+    </div>
+    <div class="card">
+        <a href="{% url 'orden:create' %}?terceros">terceros</a>
+    </div>
+    <div class="card">
+        <a href="{% url 'orden:create' %}?riesgo">riesgo</a>
+    </div>
+    <div class="card">
+        <a href="{% url 'orden:create' %}?recupero">recupero</a>
+    </div>
+</div>
+{% endblock content %}

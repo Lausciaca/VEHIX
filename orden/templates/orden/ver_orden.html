@@ -2,19 +2,83 @@
 {% extends "core/base.html" %}
 
 {% block content %}
+<style>
+
+.timeline-list {
+    margin: 0;
+    padding: 0;
+}
+
+.timeline-item {
+    margin: 20px 0;
+    padding: 10px;
+    background: #f4f4f4;
+    border-left: 4px solid #ccc;
+    position: relative;
+}
+
+.timeline-item.active {
+    background-color: #d4edda;
+    border-left-color: #28a745;
+}
+
+.timeline-content {
+    margin-left: 20px;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ccc;
+}
+
+.timeline-item.active:before {
+    background-color: #28a745;
+}
+
+</style>
+
 <div class="container my-3">
     <div class="header d-flex justify-content-between align-items-center">
         <div class="texto d-flex flex-column">
-            <h3 class="fw-bolder m-0">Orden de {{orden.cliente}}</h3>
+            <h3 class="fw-bolder m-0">Orden de {{orden.cliente}} - {{orden}}</h3>
             <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
         </div>
         <div class="">
-            <a href="{% url 'orden:delete' orden.codigo %}">
+            <a href=''>
                 <button type="button" class="btn btn-danger">Eliminar</button>
             </a>
         </div>
     </div>
     <div class="d-flex gap-3 flex-column align-items-end mb-5">
+        <div class="card p-2 w-100">
+            <ul class="timeline-list">
+                {% for estado in estados_dict %}
+                <li class="timeline-item {% if estado.0 == orden.estado %}active{% endif %}">
+                    <div class="timeline-content">
+                        <p><strong>{{ estado.1 }}</strong></p>
+                        <p>Fecha: {{ orden.fecha_creacion }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        
+            <div class="d-flex justify-content-between mt-3">
+                {% if anterior_estado %}
+                <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn btn-secondary">Estado Anterior</a>
+                {% endif %}
+                
+                {% if siguiente_estado %}
+                <a href="{% url 'orden:cambiar_estado' orden.codigo siguiente_estado %}" class="btn btn-primary">Siguiente Estado</a>
+                {% endif %}
+            </div>
+        </div>
+        
         <div class="card p-2 w-100">
             <div class="card-body">
                 <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
@@ -57,27 +121,14 @@
         </div>
         <div class="card p-2 w-100">
             <div class="card-body">
-                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Datos de la orden</h5>
+                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Imagenes del vehiculo</h5>
                 <div class="d-flex justify-content-between flex-wrap gap-2">
-                    <div class="w-100 d-flex flex-row gap-2">
-                        <div class="w-100">
-                            <label for="id_marca">Cobertura</label>
-                            <p class="m-0 fw-bold">{{ orden.get_cobertura_display }}</p>
-                        </div>
-                        <div class="w-100">
-                            <label for="id_modelo">Estado</label>
-                            <p class="m-0 fw-bold">{{ orden.get_estado_display }}</p>
-                        </div>
-                    </div>
                     <div class="w-100">
-                        <label for="id_imagenes">Imagenes</label>
-                        <div class="w-100">
-                        {% for imagen in imagenes %}
-                            <img src="{{ imagen.imagen.url }}" alt="Imagen de la orden" class="img-fluid rounded">
-                            {% empty %}
-                            <p>No hay imágenes disponibles para esta orden.</p>
-                            {% endfor %}                            
-                        </div>
+                    {% for imagen in imagenes %}
+                        <img src="{{ imagen.imagen.url }}" alt="Imagen de la orden" class="img-fluid rounded">
+                        {% empty %}
+                        <p>No hay imágenes disponibles para esta orden.</p>
+                        {% endfor %}                            
                     </div>
                 </div>
             </div>

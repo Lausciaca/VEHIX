@@ -1,23 +1,49 @@
 from django import forms
-from .models import Orden, ImagenVehiculo
-from cliente.models import Cliente
-from vehiculo.models import Vehiculo
-from datetime import datetime
+from .models import *
 
-class OrdenSearchForm(forms.Form):
-    search = forms.CharField(required=False)
-    estado = forms.ChoiceField(choices=Orden.ESTADOS_CHOICES, required=False)
-    cobertura = forms.ChoiceField(choices=Orden.COBERTURAS_CHOICES, required=False)
+# class OrdenSearchForm(forms.Form):
+#     search = forms.CharField(required=False)
+#     estado = forms.ChoiceField(choices=Orden.ESTADOS_CHOICES, required=False)
+#     cobertura = forms.ChoiceField(choices=Orden.COBERTURAS_CHOICES, required=False)
 
 
-class OrdenForm(forms.ModelForm):
+class OrdenParticularForm(forms.ModelForm):
     class Meta:
-        model = Orden
-        fields = ['cobertura', 'estado']
+        model = OrdenParticular
+        fields = ['estado']
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'vehiculo': forms.Select(attrs={'class': 'form-control'}),
-            'cobertura': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+class OrdenTercerosForm(forms.ModelForm):
+    class Meta:
+        model = OrdenTerceros
+        fields = ['estado']
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'vehiculo': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+class OrdenRiesgoForm(forms.ModelForm):
+    class Meta:
+        model = OrdenRiesgo
+        fields = ['estado']
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'vehiculo': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+class OrdenRecuperoForm(forms.ModelForm):
+    class Meta:
+        model = OrdenRecupero
+        fields = ['estado']
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'vehiculo': forms.Select(attrs={'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
         }
 
