@@ -1,2 +1,10 @@
-Django==5.1.6
+asgiref==3.8.1
+distlib==0.3.9
+Django==4.2
+django-bootstrap5==25.1
+filelock==3.16.1
 pillow==11.1.0
+platformdirs==4.3.6
+sqlparse==0.5.3
+tzdata==2025.1
+virtualenv==20.29.1
