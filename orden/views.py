@@ -9,22 +9,31 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 
 
+from itertools import chain
+
 def obtener_todas_las_ordenes():
-    # Recuperar todas las órdenes de cada tipo
+    # Recuperar todas las órdenes de cada tipo como QuerySets
     ordenes_particulares = OrdenParticular.objects.all()
     ordenes_terceros = OrdenTerceros.objects.all()
     ordenes_riesgo = OrdenRiesgo.objects.all()
     ordenes_recupero = OrdenRecupero.objects.all()
 
-    # Combinar todas las órdenes en una lista
-    todas_las_ordenes = list(ordenes_particulares) + list(ordenes_terceros) + list(ordenes_riesgo) + list(ordenes_recupero)
-
-    return todas_las_ordenes
+    # Combinar todas las órdenes en un solo iterable
+    return chain(ordenes_particulares, ordenes_terceros, ordenes_riesgo, ordenes_recupero)
 
 def ordenes(request):
-    todas_las_ordenes = obtener_todas_las_ordenes()
-    return render(request, 'orden/ordenes.html', {'ordenes': todas_las_ordenes})
+    form = OrdenSearchForm(request.GET)
+    ordenes = obtener_todas_las_ordenes()
 
+    if form.is_valid() and form.cleaned_data['search']:
+        search_term = form.cleaned_data['search']
+        ordenes = filter(lambda orden: (
+            search_term.lower() in orden.vehiculo.modelo.lower() or
+            search_term.lower() in orden.vehiculo.marca.lower() or
+            search_term.lower() in orden.cliente.nombre.lower()
+        ), ordenes)
+
+    return render(request, 'orden/ordenes.html', {'ordenes': list(ordenes)})  # Convertir en lista para el template
 
 
 

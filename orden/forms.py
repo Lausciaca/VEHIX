@@ -1,10 +1,9 @@
 from django import forms
 from .models import *
 
-# class OrdenSearchForm(forms.Form):
-#     search = forms.CharField(required=False)
-#     estado = forms.ChoiceField(choices=Orden.ESTADOS_CHOICES, required=False)
-#     cobertura = forms.ChoiceField(choices=Orden.COBERTURAS_CHOICES, required=False)
+class OrdenSearchForm(forms.Form):
+    search = forms.CharField(required=False)
+
 
 
 class OrdenParticularForm(forms.ModelForm):
