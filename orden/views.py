@@ -12,28 +12,33 @@ from django.contrib import messages
 from itertools import chain
 
 def obtener_todas_las_ordenes():
-    # Recuperar todas las órdenes de cada tipo como QuerySets
+    # Recuperar todas las órdenes de cada tipo
     ordenes_particulares = OrdenParticular.objects.all()
     ordenes_terceros = OrdenTerceros.objects.all()
     ordenes_riesgo = OrdenRiesgo.objects.all()
     ordenes_recupero = OrdenRecupero.objects.all()
 
-    # Combinar todas las órdenes en un solo iterable
-    return chain(ordenes_particulares, ordenes_terceros, ordenes_riesgo, ordenes_recupero)
+    # Combinar todas las órdenes en una lista
+    todas_las_ordenes = list(ordenes_particulares) + list(ordenes_terceros) + list(ordenes_riesgo) + list(ordenes_recupero)
+
+    return todas_las_ordenes
 
 def ordenes(request):
     form = OrdenSearchForm(request.GET)
-    ordenes = obtener_todas_las_ordenes()
+    ordenes = obtener_todas_las_ordenes()  # Esto devuelve una lista, no un QuerySet
 
     if form.is_valid() and form.cleaned_data['search']:
-        search_term = form.cleaned_data['search']
-        ordenes = filter(lambda orden: (
-            search_term.lower() in orden.vehiculo.modelo.lower() or
-            search_term.lower() in orden.vehiculo.marca.lower() or
-            search_term.lower() in orden.cliente.nombre.lower()
-        ), ordenes)
+        search_term = form.cleaned_data['search'].lower()
 
-    return render(request, 'orden/ordenes.html', {'ordenes': list(ordenes)})  # Convertir en lista para el template
+        # Filtramos manualmente la lista usando list comprehension
+        ordenes = [
+            orden for orden in ordenes
+            if search_term in orden.vehiculo.modelo.lower()
+            or search_term in orden.vehiculo.marca.lower()
+            or search_term in orden.cliente.nombre.lower()
+        ]
+
+    return render(request, 'orden/ordenes.html', {'ordenes': ordenes})
 
 
 
