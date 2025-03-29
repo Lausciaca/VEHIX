@@ -1,17 +1,94 @@
 {% extends "core/base.html" %}
 {% block content %}
-<div class="container d-flex gap-2">
-    <div class="card">
-        <a href="{% url 'orden:create' %}?particular">particular</a>
+<style>
+    .cards{
+        gap: 1rem;
+        justify-content: center;
+        width: 65%;
+        padding: 2rem 0;
+    }
+    .cards .card{
+        width: calc(50% - 0.5rem);
+        text-decoration: none;
+        padding: 1rem 1.5rem;
+        transition: all 300ms ease;
+    }
+    .card:hover{
+        border-color: rgba(0, 0, 0, 0.533);
+        background-color: rgb(245, 245, 245);
+    }
+    .card h3{
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 28px;
+    }
+    .card p{
+        font-size: 14px;
+        line-height: 20px;
+        color: rgb(113, 113, 122);
+        margin-bottom: 2rem;
+    }
+    .card small{
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: auto;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+    }
+    .card-recupero{
+        border: 2px solid black;
+    }
+    .card-recupero small{
+        background-color: black;
+        color: white;
+    }
+</style>
+<div class="container d-flex flex-column gap-2 py-3">
+    <div class="header d-flex justify-content-between align-items-center">
+        <div class="texto d-flex flex-column">
+            <h3 class="fw-bolder m-0">Nueva orden</h3>
+            <p class="text-body-secondary">Elija el tipo de orden que desea crear según la cobertura o situación del vehículo</p>
+        </div>
     </div>
-    <div class="card">
-        <a href="{% url 'orden:create' %}?terceros">terceros</a>
-    </div>
-    <div class="card">
-        <a href="{% url 'orden:create' %}?riesgo">riesgo</a>
-    </div>
-    <div class="card">
-        <a href="{% url 'orden:create' %}?recupero">recupero</a>
+    <div class="container d-flex flex-wrap flex-row cards">
+        
+        <a href="{% url 'orden:create' %}?particular" class="card">
+            <div class="d-flex justify-content-between align-items-center pb-2">
+                <h3>Particular</h3>
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <p>Para clientes que acceden al servicio sin intervencion de seguros o terceros</p>
+            <small>Seleccionar<i class="fa-solid fa-arrow-right"></i></small>
+        </a>
+        <a href="{% url 'orden:create' %}?terceros" class="card">
+            <div class="d-flex justify-content-between align-items-center pb-2">
+                <h3>Contra terceros</h3>
+                <i class="fa-solid fa-street-view"></i>
+            </div>
+            <p>Para vehículos con cobertura de seguro contra daños de terceros, y que buscar un presupuesto</p>
+            <small>Seleccionar<i class="fa-solid fa-arrow-right"></i></small>
+        </a>
+        <a href="{% url 'orden:create' %}?riesgo" class="card">
+            <div class="d-flex justify-content-between align-items-center pb-2">
+                <h3>Todo riesgo</h3>
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <p>Para vehículos con cobertura de seguro contra todo riesgo, cobertura completa con o sin franquicia</p>
+            <small>Seleccionar<i class="fa-solid fa-arrow-right"></i></small>
+        </a>
+        <a href="{% url 'orden:create' %}?recupero" class="card card-recupero">
+            <div class="d-flex justify-content-between align-items-center pb-2">                
+                <h3>Recupero de siniestro <span class="text-wrap">(Express)</span></h3>
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <p>Tramite express para clientes con coberturas de seguro contra daños de terceros</p>
+            <small>Seleccionar<i class="fa-solid fa-arrow-right"></i></small>
+        </a>
+
     </div>
 </div>
 {% endblock content %}
