@@ -1,0 +1,44 @@
+.galeria {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    justify-content: start;
+}
+
+.galeria-imagen {
+    width: calc(25% - 1rem);  /* Tamaño en la galería */
+    height: 20rem;  /* Tamaño en la galería */
+    cursor: zoom-in;
+    transition: transform 0.25s ease;
+    object-fit: cover;  /* Mantener la imagen ajustada sin deformar */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+.zoomed {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);  /* Centra la imagen */
+    z-index: 9999;
+    cursor: zoom-out;
+    max-width: 90vw;  /* Limita el ancho máximo */
+    max-height: 90vh;  /* Limita la altura máxima */
+    object-fit: contain;  /* Mantiene la relación de aspecto original */
+    width: auto;  /* Permite la relación de aspecto original */
+    height: auto;  /* Permite la relación de aspecto original */
+}

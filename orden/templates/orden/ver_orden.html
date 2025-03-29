@@ -1,6 +1,39 @@
 {% extends "core/base.html" %}
 
+{% load static %}
 {% block content %}
+
+<script>
+    function toggleZoom(img) {
+        const overlay = document.querySelector('.overlay');  // Fondo oscuro
+        // Si se hace clic en el overlay (fondo oscuro), se cierra la imagen
+        if (img === null) {
+            const zoomedImages = document.querySelectorAll('.zoomed');
+            zoomedImages.forEach(function(image) {
+                image.classList.remove('zoomed');  // Quita el zoom
+            });
+            overlay.classList.remove('active');  // Quita el fondo oscuro
+        } else {
+            // Si la imagen tiene la clase 'zoomed', se cierra
+            if (img.classList.contains('zoomed')) {
+                img.classList.remove('zoomed');
+                overlay.classList.remove('active');
+            } else {
+                // Si la imagen no tiene zoom, se aplica el zoom
+                img.classList.add('zoomed');
+                overlay.classList.add('active');
+            }
+        }
+    }
+</script>
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/orden/ver_orden.css' %}">
 <div class="container my-3">
     <div class="header d-flex justify-content-between align-items-center">
         <div class="texto d-flex flex-column">
@@ -67,13 +100,21 @@
             <div class="card-body">
                 <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Imagenes del vehiculo</h5>
                 <div class="d-flex justify-content-between flex-wrap gap-2">
-                    <div class="w-100">
-                    {% for imagen in imagenes %}
-                        <img src="{{ imagen.imagen.url }}" alt="Imagen de la orden" class="img-fluid rounded">
+                    <div class="w-100 galeria">
+                        {% for imagen in imagenes %}
+                            <img src="{{ imagen.imagen.url }}" 
+                                 alt="Imagen de la orden" 
+                                 class="img-fluid rounded galeria-imagen" 
+                                 onclick="toggleZoom(this)">
                         {% empty %}
-                        <p>No hay imágenes disponibles para esta orden.</p>
-                        {% endfor %}                            
+                            <p>No hay imágenes disponibles para esta orden.</p>
+                        {% endfor %}
                     </div>
+                    
+                    <!-- Fondo oscuro (overlay) -->
+                    <div class="overlay" onclick="toggleZoom(null)">
+                    </div>
+                            
                 </div>
             </div>
         </div>
