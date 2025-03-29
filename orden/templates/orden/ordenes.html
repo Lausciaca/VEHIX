@@ -54,6 +54,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Vehículo</th>
                 <th scope="col">Cliente</th>
+                <th scope="col">Cobertura</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Detalles</th>
             </tr>
@@ -64,6 +65,7 @@
                     <th scope="row">{{ orden.codigo }}</th>
                     <td>{{ orden.vehiculo }}</td>
                     <td>{{ orden.cliente }}</td>
+                    <td>{{ orden }}</td>
                     <td>{{ orden.get_estado_display }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>

@@ -1,45 +1,42 @@
-
 {% extends "core/base.html" %}
 
 {% block content %}
 <style>
-
-.timeline-list {
-    margin: 0;
-    padding: 0;
+    .timeline {
+  border-left: 1px solid hsl(0, 0%, 90%);
+  position: relative;
+  list-style: none;
+  margin: 1rem auto auto 1rem;
+  padding-left: 16px;
 }
 
-.timeline-item {
-    margin: 20px 0;
-    padding: 10px;
-    background: #f4f4f4;
-    border-left: 4px solid #ccc;
-    position: relative;
+.timeline .timeline-item {
+  position: relative;
 }
 
-.timeline-item.active {
-    background-color: #d4edda;
-    border-left-color: #28a745;
+.timeline .timeline-item:after {
+  position: absolute;
+  display: block;
+  top: 8px;
 }
 
-.timeline-content {
-    margin-left: 20px;
+.timeline .timeline-item:after {
+  background-color: hsl(0, 0%, 90%);
+  left: -21.5px;
+  border-radius: 50%;
+  height: 11px;
+  width: 11px;
+  content: "";
+}
+.timeline .timeline-item.active:after {
+  background-color: rgb(0, 89, 215);
 }
 
-.timeline-item:before {
-    content: '';
-    position: absolute;
-    left: -8px;
-    top: 12px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: #ccc;
+.card-timeline, .right {
+    width: 49%;
+    min-height: 100%; /* Hace que ambos lados tengan la misma altura */
 }
 
-.timeline-item.active:before {
-    background-color: #28a745;
-}
 
 </style>
 
@@ -55,70 +52,71 @@
             </a>
         </div>
     </div>
-    <div class="d-flex gap-3 flex-column align-items-end mb-5">
-        <div class="card p-2 w-100">
-            <ul class="timeline-list">
-                {% for estado in estados_dict %}
-                <li class="timeline-item {% if estado.0 == orden.estado %}active{% endif %}">
-                    <div class="timeline-content">
-                        <p><strong>{{ estado.1 }}</strong></p>
-                        <p>Fecha: {{ orden.fecha_creacion }}</p>
-                    </div>
-                </li>
+    <div class="d-flex gap-3 flex-row mb-5 flex-wrap h-100 justify-content-between">
+
+        <!-- Lado izquierdo: Timeline -->
+        <div class="card p-2 card-timeline">
+            <ul class="timeline">           
+                {% for clave, valor in estados_dict.items %}
+                    <li class="timeline-item mb-5 {% if clave == orden.estado %}active{% endif %}">
+                        <p class="fw-bold">{{ valor }}</p>
+                    </li>
                 {% endfor %}
             </ul>
-        
-            <div class="d-flex justify-content-between mt-3">
+            <div class="d-flex justify-content-between mt-3 p-2">
                 {% if anterior_estado %}
-                <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn btn-secondary">Estado Anterior</a>
+                <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn btn-secondary mr-auto">Estado Anterior</a>
                 {% endif %}
                 
                 {% if siguiente_estado %}
-                <a href="{% url 'orden:cambiar_estado' orden.codigo siguiente_estado %}" class="btn btn-primary">Siguiente Estado</a>
+                <a href="{% url 'orden:cambiar_estado' orden.codigo siguiente_estado %}" class="btn btn-primary mr-0">Siguiente Estado</a>
                 {% endif %}
             </div>
         </div>
         
-        <div class="card p-2 w-100">
-            <div class="card-body">
-                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
-                <div class="d-flex justify-content-between flex-wrap gap-2">
-                    <div class="w-100 d-flex flex-row gap-2">
-                        <div class="w-100">
-                            <label for="id_nombre">Nombre</label>
-                            <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
-                        </div>
-                        <div class="w-100">
-                            <label for="id_nombre">Telefono</label>
-                            <p class="m-0 fw-bold">{{ orden.cliente.telefono }}</p>
-                        </div>
+        <!-- Lado derecho: Datos del cliente y vehículo -->
+        <div class="right d-flex flex-column h-100 justify-content-between gap-3">
+            <!-- DATOS PERSONALES -->
+            <div class="card p-2 flex-grow-1">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
+                    <div class="w-100 py-2">
+                        <label for="id_nombre">Nombre</label>
+                        <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
                     </div>
-                    <div class="w-100">
+                    <div class="w-100 py-2">
+                        <label for="id_nombre">Telefono</label>
+                        <p class="m-0 fw-bold">{{ orden.cliente.telefono }}</p>
+                    </div>
+                    <div class="w-100 py-2">
                         <label for="id_nombre">Email</label>
                         <p class="m-0 fw-bold">{{ orden.cliente.email }}</p>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="card p-2 w-100">
-            <div class="card-body">
-                <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
-                <div class="d-flex justify-content-between gap-2">
-                    <div class="w-50">
-                        <label for="id_marca">Marca</label>
-                        <p class="m-0 fw-bold">{{ orden.vehiculo.marca }}</p>
-                    </div>
-                    <div class="w-50">
-                        <label for="id_modelo">Modelo</label>
-                        <p class="m-0 fw-bold">{{ orden.vehiculo.modelo }}</p>
-                    </div>
-                    <div class="w-50">
-                        <label for="id_patente">Patente</label>
-                        <p class="m-0 fw-bold">{{ orden.vehiculo.patente }}</p>
+
+            <!-- DATOS DEL VEHICULO -->
+            <div class="card p-2 flex-grow-1">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
+                    <div class="d-flex justify-content-between gap-2">
+                        <div class="w-50">
+                            <label for="id_marca">Marca</label>
+                            <p class="m-0 fw-bold">{{ orden.vehiculo.marca }}</p>
+                        </div>
+                        <div class="w-50">
+                            <label for="id_modelo">Modelo</label>
+                            <p class="m-0 fw-bold">{{ orden.vehiculo.modelo }}</p>
+                        </div>
+                        <div class="w-50">
+                            <label for="id_patente">Patente</label>
+                            <p class="m-0 fw-bold">{{ orden.vehiculo.patente }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="card p-2 w-100">
             <div class="card-body">
                 <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-file"></i> Imagenes del vehiculo</h5>
