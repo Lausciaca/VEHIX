@@ -10,28 +10,15 @@
     </div>
 
     <div class="busqueda d-flex flex-row gap-3 my-3 justify-content-between">
-        <form method="get" class="d-flex w-100 gap-3">
+        <form method="get" class="d-flex w-100 gap-3 align-items-end">
             <!-- Búsqueda por cliente o vehículo -->
-            <div class="input-group w-25">
+            <div class="input-group w-25" style="margin-left: auto;">
                 <input type="text" class="form-control" name="search" placeholder="Buscar por vehículo o cliente" value="{{ request.GET.search }}">
                 <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
             </div>
 
             <!-- Filtros -->
-            <div class="d-flex w-50">
-                <!-- Filtro por Modalidad -->
-                <div class="input-group me-3">
-                    <label for="filtroCobertura" class="input-group-text">Cobertura</label>
-                    <select id="filtroCobertura" class="form-select" name="cobertura">
-                        <option value="">Seleccionar cobertura</option>
-                        <option value="particular" {% if request.GET.cobertura == "particular" %}selected{% endif %}>Particular</option>
-                        <option value="terceros" {% if request.GET.cobertura == "terceros" %}selected{% endif %}>Contra terceros</option>
-                        <option value="riesgo" {% if request.GET.cobertura == "riesgo" %}selected{% endif %}>Todo riesgo</option>
-                        <option value="recupero" {% if request.GET.cobertura == "recupero" %}selected{% endif %}>Recupero de siniestro</option>
-                    </select>
-                </div>
-
-                <!-- Filtro por Estado -->
+            <!-- <div class="d-flex w-50">
                 <div class="input-group">
                     <label for="filtroEstado" class="input-group-text">Estado</label>
                     <select id="filtroEstado" class="form-select" name="estado">
@@ -41,9 +28,10 @@
                         <option value="entregado" {% if request.GET.estado == "entregado" %}selected{% endif %}>Entregado</option>
                     </select>
                 </div>
-            </div>
-
+            </div> 
+            
             <button type="submit" class="btn btn-primary">Buscar</button>
+            -->
         </form>
     </div>
 
@@ -65,8 +53,8 @@
                     <th scope="row">{{ orden.codigo }}</th>
                     <td>{{ orden.vehiculo }}</td>
                     <td>{{ orden.cliente }}</td>
-                    <td>{{ orden }}</td>
-                    <td>{{ orden.get_estado_display }}</td>
+                    <td>{{ orden.cobertura }}</td>
+                    <td class="{% if orden.get_estado_display != 'Entregado' %}text-danger{% endif %}">{{ orden.get_estado_display }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
             {% empty %}
@@ -75,4 +63,5 @@
         </tbody>
     </table>
 </div>
+
 {% endblock content %}

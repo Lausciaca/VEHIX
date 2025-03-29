@@ -10,11 +10,12 @@ class OrdenParticular(models.Model):
         ('2', 'Enviar a cliente'),
         ('3', 'Acordar turno'),
         ('4', 'Ingresar al taller'),
-        ('5', 'Entregar el vehiculo'),
+        ('5', 'Entregado'),
     ]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name='Cliente', blank=False)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, verbose_name='Vehiculo', blank=False)
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
+    cobertura = 'Particular'
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)
@@ -24,7 +25,7 @@ class OrdenParticular(models.Model):
         verbose_name_plural = 'ordenes particulares'
 
     def __str__(self):
-        return 'Particular'
+        return f"{self.vehiculo} de {self.cliente} - Particular"
 
     def save(self, *args, **kwargs):
         if not self.codigo:  # Solo generar código si no existe
@@ -38,11 +39,12 @@ class OrdenTerceros(models.Model):
         ('2', 'Enviar a cliente'),
         ('3', 'Acordar turno'),
         ('4', 'Ingresar al taller'),
-        ('5', 'Entregar el vehiculo'),
+        ('5', 'Entregado'),
     ]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name='Cliente', blank=False)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, verbose_name='Vehiculo', blank=False)
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
+    cobertura = 'Contra terceros'
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)
@@ -52,7 +54,7 @@ class OrdenTerceros(models.Model):
         verbose_name_plural = 'ordenes terceros'
 
     def __str__(self):
-        return 'Contra terceros'
+        return f"{self.vehiculo} de {self.cliente} - Contra terceros"
 
     def save(self, *args, **kwargs):
         if not self.codigo:  # Solo generar código si no existe
@@ -66,11 +68,12 @@ class OrdenRiesgo(models.Model):
         ('2', 'Enviar a seguro'),
         ('3', 'Acordar turno'),
         ('4', 'Ingresar al taller'),
-        ('5', 'Entregar el vehiculo'),
+        ('5', 'Entregado'),
     ]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name='Cliente', blank=False)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, verbose_name='Vehiculo', blank=False)
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
+    cobertura = 'Todo riesgo'
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)
@@ -80,7 +83,7 @@ class OrdenRiesgo(models.Model):
         verbose_name_plural = 'ordenes riesgo'
 
     def __str__(self):
-        return 'Todo riesgo'
+        return f"{self.vehiculo} de {self.cliente} - Todo riesgo"
 
     def save(self, *args, **kwargs):
         if not self.codigo:  # Solo generar código si no existe
@@ -95,11 +98,12 @@ class OrdenRecupero(models.Model):
         ('3', 'Recibir y enviar poder firmado'),
         ('4', 'Acordar turno'),
         ('5', 'Ingresar al taller'),
-        ('6', 'Entregar el vehiculo'),
+        ('6', 'Entregado'),
     ]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name='Cliente', blank=False)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, verbose_name='Vehiculo', blank=False)
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
+    cobertura = 'Recupero de siniestro'
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)
@@ -109,7 +113,7 @@ class OrdenRecupero(models.Model):
         verbose_name_plural = 'ordenes recuperos'
 
     def __str__(self):
-        return 'Recupero de siniestro'
+        return f"{self.vehiculo} de {self.cliente} - Recupero de siniestro"
 
     def save(self, *args, **kwargs):
         if not self.codigo:  # Solo generar código si no existe

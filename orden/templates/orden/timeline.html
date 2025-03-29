@@ -1,0 +1,21 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static '/orden/timeline.css' %}">
+<div id="timeline-container">
+    <ul class="timeline">           
+        {% for clave, valor in estados_dict.items %}
+            <li class="timeline-item mb-5 {% if clave == orden.estado %}active{% endif %}" data-estado="{{ clave }}">
+                <p class="fw-bold">{{ valor }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <div class="d-flex justify-content-between mt-3 p-2">
+        {% if anterior_estado %}
+        <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn btn-secondary btn-estado">Estado Anterior</a>
+        {% endif %}
+        
+        {% if siguiente_estado %}
+        <a href="{% url 'orden:cambiar_estado' orden.codigo siguiente_estado %}" class="btn btn-primary btn-estado">Siguiente Estado</a>
+        {% endif %}
+    </div>
+</div>

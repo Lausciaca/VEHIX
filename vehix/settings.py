@@ -121,7 +121,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 # settings.py
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # Si estás en producción, asegúrate de que también se configuren las rutas correctas para los archivos estáticos
 STATICFILES_DIRS = [

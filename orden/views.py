@@ -4,6 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from cliente.forms import ClienteForm
 from vehiculo.forms import VehiculoForm
 from .forms import *
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.contrib import messages
 
 
 def obtener_todas_las_ordenes():
@@ -19,37 +22,6 @@ def obtener_todas_las_ordenes():
     return todas_las_ordenes
 
 def ordenes(request):
-    # # Inicializa el formulario con los parámetros GET
-    # form = OrdenSearchForm(request.GET)
-    
-    # # Obtén todas las órdenes inicialmente
-    # ordenes = Orden.objects.all()
-
-    # # Aplica los filtros si el formulario es válido
-    # if form.is_valid():
-    #     # Filtra por estado si se ha seleccionado
-    #     if form.cleaned_data['estado']:
-    #         ordenes = ordenes.filter(estado=form.cleaned_data['estado'])
-        
-    #     # Filtra por cobertura si se ha seleccionado
-    #     if form.cleaned_data['cobertura']:
-    #         ordenes = ordenes.filter(cobertura=form.cleaned_data['cobertura'])
-
-
-    #     if form.cleaned_data['search']:
-    #         ordenes = ordenes.filter(
-    #             vehiculo__modelo__icontains=form.cleaned_data['search']
-    #         ) | ordenes.filter(
-    #             vehiculo__marca__icontains=form.cleaned_data['search']
-    #         ) | ordenes.filter(
-    #             cliente__nombre__icontains=form.cleaned_data['search']
-    #         )
-
-
-    # return render(request, 'orden/ordenes.html', {
-    #     'ordenes': ordenes,
-    #     'form': form,
-    # })
     todas_las_ordenes = obtener_todas_las_ordenes()
     return render(request, 'orden/ordenes.html', {'ordenes': todas_las_ordenes})
 
@@ -282,38 +254,53 @@ def ver_orden(request, codigo):
 def cambiar_estado(request, codigo, estado):
     tipo_orden = codigo.split('-')[1]
 
-    if tipo_orden == '1':
-        orden = get_object_or_404(OrdenParticular, codigo=codigo)
-    elif tipo_orden == '2':
-        orden = get_object_or_404(OrdenTerceros, codigo=codigo)
-    elif tipo_orden == '3':
-        orden = get_object_or_404(OrdenRiesgo, codigo=codigo)
-    elif tipo_orden == '4':
-        orden = get_object_or_404(OrdenRecupero, codigo=codigo)
-    else:
-        return redirect('error')
+    modelos = {
+        '1': OrdenParticular,
+        '2': OrdenTerceros,
+        '3': OrdenRiesgo,
+        '4': OrdenRecupero,
+    }
 
-    # Actualizar el estado de la orden
+    modelo = modelos.get(tipo_orden)
+    if not modelo:
+        return JsonResponse({'success': False, 'error': 'Tipo de orden inválido'}, status=400)
+
+    orden = get_object_or_404(modelo, codigo=codigo)
     orden.estado = estado
     orden.save()
 
-    # Redirigir de vuelta a la vista de la orden
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Genera el HTML para el timeline
+        timeline_html = render_to_string("orden/timeline.html", {"orden": orden})
+        return JsonResponse({'success': True, 'timeline': timeline_html, 'estado': estado})  # Enviamos el HTML actualizado
+    
     return redirect('orden:detail', codigo=codigo)
 
-# def eliminar_orden(request, codigo):
-#     try:
-#         # Obtener la orden por código
-#         orden = Orden.objects.get(codigo=codigo)
+def eliminar_orden(request, codigo):
+    tipo_orden = codigo.split('-')[1]
+    
+    orden = None
+    
+    if tipo_orden == '1':
+        orden = OrdenParticular.objects.filter(codigo=codigo).first()
+    elif tipo_orden == '2':
+        orden = OrdenTerceros.objects.filter(codigo=codigo).first()
+    elif tipo_orden == '3':
+        orden = OrdenRiesgo.objects.filter(codigo=codigo).first()
+    elif tipo_orden == '4':
+        orden = OrdenRecupero.objects.filter(codigo=codigo).first()
+        
+        
+    try:
+        # Eliminar la orden
+        orden.delete()
 
-#         # Eliminar la orden
-#         orden.delete()
+        # Mensaje de éxito
+        messages.success(request, f"La orden {codigo} ha sido eliminada con éxito.")
 
-#         # Mensaje de éxito
-#         messages.success(request, f"La orden {codigo} ha sido eliminada con éxito.")
+    except orden.DoesNotExist:
+        # Si la orden no existe
+        messages.error(request, "La orden que intentas eliminar no existe.")
 
-#     except Orden.DoesNotExist:
-#         # Si la orden no existe
-#         messages.error(request, "La orden que intentas eliminar no existe.")
-
-#     # Redirigir a una página de lista o donde se gestione la visualización de las órdenes
-#     return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes
+    # Redirigir a una página de lista o donde se gestione la visualización de las órdenes
+    return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes

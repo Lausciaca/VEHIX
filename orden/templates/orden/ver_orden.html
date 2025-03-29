@@ -1,45 +1,6 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<style>
-    .timeline {
-  border-left: 1px solid hsl(0, 0%, 90%);
-  position: relative;
-  list-style: none;
-  margin: 1rem auto auto 1rem;
-  padding-left: 16px;
-}
-
-.timeline .timeline-item {
-  position: relative;
-}
-
-.timeline .timeline-item:after {
-  position: absolute;
-  display: block;
-  top: 8px;
-}
-
-.timeline .timeline-item:after {
-  background-color: hsl(0, 0%, 90%);
-  left: -21.5px;
-  border-radius: 50%;
-  height: 11px;
-  width: 11px;
-  content: "";
-}
-.timeline .timeline-item.active:after {
-  background-color: rgb(0, 89, 215);
-}
-
-.card-timeline, .right {
-    width: 49%;
-    min-height: 100%; /* Hace que ambos lados tengan la misma altura */
-}
-
-
-</style>
-
 <div class="container my-3">
     <div class="header d-flex justify-content-between align-items-center">
         <div class="texto d-flex flex-column">
@@ -47,7 +8,7 @@
             <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
         </div>
         <div class="">
-            <a href=''>
+            <a href='{% url 'orden:delete' orden.codigo %}'>
                 <button type="button" class="btn btn-danger">Eliminar</button>
             </a>
         </div>
@@ -56,22 +17,7 @@
 
         <!-- Lado izquierdo: Timeline -->
         <div class="card p-2 card-timeline">
-            <ul class="timeline">           
-                {% for clave, valor in estados_dict.items %}
-                    <li class="timeline-item mb-5 {% if clave == orden.estado %}active{% endif %}">
-                        <p class="fw-bold">{{ valor }}</p>
-                    </li>
-                {% endfor %}
-            </ul>
-            <div class="d-flex justify-content-between mt-3 p-2">
-                {% if anterior_estado %}
-                <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn btn-secondary mr-auto">Estado Anterior</a>
-                {% endif %}
-                
-                {% if siguiente_estado %}
-                <a href="{% url 'orden:cambiar_estado' orden.codigo siguiente_estado %}" class="btn btn-primary mr-0">Siguiente Estado</a>
-                {% endif %}
-            </div>
+            {% include "orden/timeline.html" %}
         </div>
         
         <!-- Lado derecho: Datos del cliente y vehículo -->
@@ -133,5 +79,4 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}
