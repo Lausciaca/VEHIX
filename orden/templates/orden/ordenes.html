@@ -39,7 +39,7 @@
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
             {% empty %}
-                <tr><td colspan="5" class="text-center">No se encontraron órdenes que coincidan con los criterios de búsqueda.</td></tr>
+                <tr><td colspan="6" class="text-center">No se encontraron órdenes que coincidan con los criterios de búsqueda.</td></tr>
             {% endfor %}
         </tbody>
     </table>
