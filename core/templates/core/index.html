@@ -1,4 +1,8 @@
 {% extends "core/base.html" %}
+{% load static %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'core/css/index.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container my-3">
@@ -16,6 +20,15 @@
                     <i class="fa-regular fa-file-lines"></i>
                 </div>
                 <h5 class="card-title fs-2 fw-bold my-2">{{ordenesActivas}}</h5>
+            </div>
+        </div>
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h6 class="card-subtitle text-body-secondary">Cobertura mas elegida</h6>
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+                <h5 class="card-title fs-2 fw-bold my-2">{{coberturaMasElegida}}</h5>
             </div>
         </div>
         <div class="card p-2 w-100">
