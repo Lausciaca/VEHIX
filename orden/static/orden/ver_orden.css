@@ -46,13 +46,35 @@
 
 
 
-.right{
-    width: 30%;
-    height: 100%;
-}
+
 .left{
     width: 70%;
 }
 .right i, .left i{
     color: rgb(0, 89, 215);
+}
+.right {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.contenedor-pago {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.mid {
+
+    height: fit-content;
+}
+
+
+.right .top {
+    flex-shrink: 0; /* Mantiene el resumen de pago fijo arriba */
+}
+.right .bottom {
+    margin-top: 0px;
 }

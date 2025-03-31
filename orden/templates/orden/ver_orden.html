@@ -102,26 +102,29 @@
             <!-- Lado derecho: Datos del cliente y vehículo -->
             <div class="right">
                 <!-- PAGO -->
-                <div class="card p-2 flex-grow-1 h-100">
+                <div class="card py-2 px-2 flex-grow-1 h-100">
                     <div class="card-body">
                         <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center">Resumen de pago</h5>
-                        <div class="d-flex w-100 flex-column">
-                            <div class="d-flex w-100 fw-bold justify-content-between">
+                        <div class="d-flex w-100 flex-column contenedor-pago">
+                            <div class="d-flex w-100 fw-bold justify-content-between top">
                                 <p>Total a pagar</p>
                                 <p>$</p>
                             </div>
-                            <div class="">
+                            <div class="mid">
                                 <p>Pagos realizados</p>
                                 <ul>
                                     <li>$</li>
                                     <li>$</li>
                                     <li>$</li>
+                                    <li>$</li>
                                 </ul>
                             </div>
-                            <hr>
-                            <div class="d-flex w-100 flex-row justify-content-between fw-bold">
-                                <p>Restante</p>
-                                <p class="text-danger">$</p>
+                            <div class="w-100 fw-bold bottom">
+                                <hr>
+                                <div class="d-flex flex-row justify-content-between">
+                                    <p>Restante</p>
+                                    <p class="text-danger">$</p>
+                                </div>
                             </div>
                         </div>
                     </div>
