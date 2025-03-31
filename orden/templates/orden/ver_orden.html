@@ -48,6 +48,7 @@
     </div>
     <div class="d-flex gap-3 flex-row mb-5 flex-wrap h-100 justify-content-between">
 
+        
         <!-- Lado izquierdo: Timeline -->
         <div class="card p-2 card-timeline">
             {% include "orden/timeline.html" %}
@@ -65,7 +66,7 @@
                     </div>
                     <div class="w-100 py-2 d-flex flex-column">
                         <label for="id_nombre">Telefono</label>
-                        <a class="m-0 fw-bold text-decoration-none" href='https://wa.me/{{ orden.cliente.telefono }}'>{{ orden.cliente.telefono }}</a>
+                        <a class="m-0 fw-bold text-decoration-none" href='https://wa.me/{{ orden.cliente.telefono }}' target='_blank'>{{ orden.cliente.telefono }}</a>
                     </div>
                     <div class="w-100 py-2">
                         <label for="id_nombre">Email</label>

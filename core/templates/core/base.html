@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
     {% block stylesheets %}{% endblock %}
 </head>
-<body>
+<body class='bg-light'>
     <div class="base__container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light px-3 border-bottom">
+        <nav class="navbar navbar-expand-lg navbar-light px-3 border-bottom">
             <a class="logo navbar-brand fw-bold px-3" href="{% url 'index' %}">
                 <img src="{% static "/core/images/logo.png" %}" alt="" class=''>
             </a>
@@ -44,10 +44,7 @@
             </div>            
         </nav>
         <main>
-            <header>
-                <h1>{% block title %}{% endblock %}</h1>
-            </header>
-            <section>
+            <section >
                 {% block content %}
                 {% endblock %}
             </section>

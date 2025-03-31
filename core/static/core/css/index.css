@@ -1,0 +1,13 @@
+.card-focus{
+    border: 1px solid rgb(147, 197, 253);
+    background: linear-gradient(to right bottom, #fff, #f0f7ff);
+    color: #5492f7;
+}
+.btn-add{
+    background-color: #2563EB;
+    color: white;
+}
+.btn-add:hover{
+    background-color: #437af0;
+    color: white;
+}

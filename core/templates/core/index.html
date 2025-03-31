@@ -9,7 +9,7 @@
     <div class="header d-flex justify-content-between align-items-center">
         <h3 class="fw-bolder">Inicio</h3>
         <a href="{% url 'orden:create' %}">
-            <button type='button' class="btn btn-dark">Agregar orden</button>
+            <button type='button' class="btn btn-add">Agregar orden</button>
         </a>
     </div>
     <div class="my-4 d-flex justify-content-between gap-3">
@@ -31,10 +31,10 @@
                 <h5 class="card-title fs-2 fw-bold my-2">{{coberturaMasElegida}}</h5>
             </div>
         </div>
-        <div class="card p-2 w-100">
+        <div class="card card-focus p-2 w-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
-                    <h6 class="card-subtitle text-body-secondary">Vehiculos en taller</h6>
+                    <h6 class="card-subtitle">Vehiculos en taller</h6>
                     <i class="fa-solid fa-car-rear"></i>
                 </div>
                 <h5 class="card-title fs-2 fw-bold my-2">{{vehiculosTaller}}</h5>

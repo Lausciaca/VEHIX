@@ -25,6 +25,7 @@
                 <th scope="col">Cliente</th>
                 <th scope="col">Cobertura</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Creación</th>
                 <th scope="col">Detalles</th>
             </tr>
         </thead>
@@ -36,6 +37,7 @@
                     <td>{{ orden.cliente }}</td>
                     <td>{{ orden.cobertura }}</td>
                     <td class="{% if orden.get_estado_display != 'Entregado' %}text-danger{% endif %}">{{ orden.get_estado_display }}</td>
+                    <td>{{ orden.created|date:'d/m/Y' }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
             {% empty %}
