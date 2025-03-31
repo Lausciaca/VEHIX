@@ -54,52 +54,57 @@
                 {% include "orden/timeline.html" %}
             </div>
         </div>
-        <!-- Lado izquierdo -->
-        <div class="left">
+        <div class="w-100 d-flex gap-2 flex-row">
+            <!-- Lado izquierdo -->
+            <div class="left d-flex flex-column h-100 justify-content-between gap-3">
+                <!-- DATOS PERSONALES -->
+                <div class="card p-2 flex-grow-1">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
+                        <div class="d-flex">
+                            <div class="w-100 py-2">
+                                <label for="id_nombre">Nombre</label>
+                                <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
+                            </div>
+                            <div class="w-100 py-2 d-flex flex-column">
+                                <label for="id_nombre">Telefono</label>
+                                <a class="m-0 fw-bold text-decoration-none" href='https://wa.me/{{ orden.cliente.telefono }}' target='_blank'>{{ orden.cliente.telefono }}</a>
+                            </div>
+                            <div class="w-100 py-2">
+                                <label for="id_nombre">Email</label>
+                                <p class="m-0 fw-bold">{{ orden.cliente.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DATOS DEL VEHICULO -->
+                <div class="card p-2 flex-grow-1">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
+                        <div class="d-flex justify-content-between gap-2">
+                            <div class="w-50">
+                                <label for="id_marca">Marca</label>
+                                <p class="m-0 fw-bold">{{ orden.vehiculo.marca }}</p>
+                            </div>
+                            <div class="w-50">
+                                <label for="id_modelo">Modelo</label>
+                                <p class="m-0 fw-bold">{{ orden.vehiculo.modelo }}</p>
+                            </div>
+                            <div class="w-50">
+                                <label for="id_patente">Patente</label>
+                                <p class="m-0 fw-bold">{{ orden.vehiculo.patente }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Lado derecho: Datos del cliente y vehículo -->
+            <div class="right ">
+                
+            </div>
         </div>
         
-        <!-- Lado derecho: Datos del cliente y vehículo -->
-        <div class="right d-flex flex-column h-100 justify-content-between gap-3">
-            <!-- DATOS PERSONALES -->
-            <div class="card p-2 flex-grow-1">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
-                    <div class="w-100 py-2">
-                        <label for="id_nombre">Nombre</label>
-                        <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
-                    </div>
-                    <div class="w-100 py-2 d-flex flex-column">
-                        <label for="id_nombre">Telefono</label>
-                        <a class="m-0 fw-bold text-decoration-none" href='https://wa.me/{{ orden.cliente.telefono }}' target='_blank'>{{ orden.cliente.telefono }}</a>
-                    </div>
-                    <div class="w-100 py-2">
-                        <label for="id_nombre">Email</label>
-                        <p class="m-0 fw-bold">{{ orden.cliente.email }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DATOS DEL VEHICULO -->
-            <div class="card p-2 flex-grow-1">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-car"></i> Datos del vehiculo</h5>
-                    <div class="d-flex justify-content-between gap-2">
-                        <div class="w-50">
-                            <label for="id_marca">Marca</label>
-                            <p class="m-0 fw-bold">{{ orden.vehiculo.marca }}</p>
-                        </div>
-                        <div class="w-50">
-                            <label for="id_modelo">Modelo</label>
-                            <p class="m-0 fw-bold">{{ orden.vehiculo.modelo }}</p>
-                        </div>
-                        <div class="w-50">
-                            <label for="id_patente">Patente</label>
-                            <p class="m-0 fw-bold">{{ orden.vehiculo.patente }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="card p-2 w-100">
             <div class="card-body">
