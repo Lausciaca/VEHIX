@@ -1,0 +1,24 @@
+.estado-orden{
+    display: flex;
+    align-items: center;
+}
+.estado-orden span{
+    padding: 2px 10px;
+    border-radius: 50px;
+    border: 1px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+}
+.orden-activa span{
+    color: white;
+    background-color: #2563EB;
+}
+.orden-terminada span{
+    color: rgb(5, 150, 105);
+    border-color: rgb(5, 150, 105);
+    background-color: rgb(240, 253, 244);
+}

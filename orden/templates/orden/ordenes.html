@@ -1,5 +1,9 @@
 {% extends "core/base.html" %}
+{% load static %}
 
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static '/orden/ordenes.css' %}">
+{% endblock stylesheets %}
 {% block content %}
 <div class="container my-3">    
     <div class="header d-flex justify-content-between align-items-center mb-2">
@@ -36,7 +40,7 @@
                     <td>{{ orden.vehiculo }}</td>
                     <td>{{ orden.cliente }}</td>
                     <td>{{ orden.cobertura }}</td>
-                    <td class="{% if orden.get_estado_display != 'Entregado' %}text-danger{% endif %}">{{ orden.get_estado_display }}</td>
+                    <td class="estado-orden {% if orden.get_estado_display != 'Entregado' %}orden-activa{% else %}orden-terminada{% endif %}"><span>{{ orden.get_estado_display }}</span></td>
                     <td>{{ orden.created|date:'d/m/Y' }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
