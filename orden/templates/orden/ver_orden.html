@@ -63,9 +63,9 @@
                         <label for="id_nombre">Nombre</label>
                         <p class="m-0 fw-bold">{{ orden.cliente.nombre }}</p>
                     </div>
-                    <div class="w-100 py-2">
+                    <div class="w-100 py-2 d-flex flex-column">
                         <label for="id_nombre">Telefono</label>
-                        <p class="m-0 fw-bold">{{ orden.cliente.telefono }}</p>
+                        <a class="m-0 fw-bold text-decoration-none" href='https://wa.me/{{ orden.cliente.telefono }}'>{{ orden.cliente.telefono }}</a>
                     </div>
                     <div class="w-100 py-2">
                         <label for="id_nombre">Email</label>
