@@ -49,9 +49,13 @@
     <div class="d-flex gap-3 flex-row mb-5 flex-wrap h-100 justify-content-between">
 
         
-        <!-- Lado izquierdo: Timeline -->
-        <div class="card p-2 card-timeline">
-            {% include "orden/timeline.html" %}
+        <div class="card p-2 w-100">
+            <div class="card-body">
+                {% include "orden/timeline.html" %}
+            </div>
+        </div>
+        <!-- Lado izquierdo -->
+        <div class="left">
         </div>
         
         <!-- Lado derecho: Datos del cliente y vehículo -->
