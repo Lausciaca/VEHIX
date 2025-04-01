@@ -1,6 +1,5 @@
 from .models import *
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import render, redirect
 from cliente.forms import ClienteForm
 from vehiculo.forms import VehiculoForm
 from .forms import *
@@ -11,15 +10,23 @@ import fitz  # PyMuPDF
 from django.http import HttpResponse
 import io
 
-
-from itertools import chain
-
-def tiene_presupuesto(orden):
-    content_type = ContentType.objects.get_for_model(orden)
-    return Presupuesto.objects.filter(
-        content_type=content_type,
-        object_id=orden.id
-    ).exists()
+    
+    
+def obtener_orden(codigo):
+        tipo_orden = codigo.split('-')[1]
+        
+        if tipo_orden == '1':
+            orden = OrdenParticular.objects.filter(codigo=codigo).first()
+        elif tipo_orden == '2':
+            orden = OrdenTerceros.objects.filter(codigo=codigo).first()
+        elif tipo_orden == '3':
+            orden = OrdenRiesgo.objects.filter(codigo=codigo).first()
+        elif tipo_orden == '4':
+            orden = OrdenRecupero.objects.filter(codigo=codigo).first()
+        else:
+            orden = None
+        
+        return orden
     
 def obtener_todas_las_ordenes():
     # Recuperar todas las órdenes de cada tipo
@@ -52,249 +59,92 @@ def ordenes(request):
 
 
 
-
 def crear_orden(request):
+    # Determinar el tipo de orden
+    tipo_orden = None
     if 'particular' in request.GET:
-        if request.method == 'POST':
-            cliente_form = ClienteForm(request.POST)
-            vehiculo_form = VehiculoForm(request.POST)
-            orden_form = OrdenParticularForm(request.POST)
-            imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
-
-            if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
-                # Crear cliente
-                cliente = cliente_form.save()
-
-                # Crear vehículo
-                vehiculo = vehiculo_form.save()
-
-                # Crear orden
-                orden = orden_form.save(commit=False)
-                orden.cliente = cliente
-                orden.vehiculo = vehiculo
-                orden.estado = '1'
-                orden.save()
-
-                # Guardar imágenes de vehículo (manejo de múltiples archivos)
-                for img in request.FILES.getlist('imagen'):  # Iterar sobre las imágenes
-                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
-
-                return redirect('orden:list')  # Redirigir a alguna página de éxito
-
-        else:
-            cliente_form = ClienteForm()
-            vehiculo_form = VehiculoForm()
-            orden_form = OrdenParticularForm()
-            imagen_form = ImagenVehiculoForm()
-
-        return render(request, 'orden/crear_orden.html', {
-            'cliente_form': cliente_form,
-            'vehiculo_form': vehiculo_form,
-            'orden_form': orden_form,
-            'imagen_form': imagen_form,
-        })
-    
+        tipo_orden = 'Particular'
+        orden_form_class = OrdenParticularForm
     elif 'terceros' in request.GET:
-        if request.method == 'POST':
-            cliente_form = ClienteForm(request.POST)
-            vehiculo_form = VehiculoForm(request.POST)
-            orden_form = OrdenTercerosForm(request.POST)
-            imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
-
-            if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
-                # Crear cliente
-                cliente = cliente_form.save()
-
-                # Crear vehículo
-                vehiculo = vehiculo_form.save()
-
-                # Crear orden
-                orden = orden_form.save(commit=False)
-                orden.cliente = cliente
-                orden.vehiculo = vehiculo
-                orden.estado = '1'
-                orden.save()
-
-                # Guardar imágenes de vehículo (manejo de múltiples archivos)
-                for img in request.FILES.getlist('imagen'):  # Iterar sobre las imágenes
-                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
-
-                return redirect('orden:list')  # Redirigir a alguna página de éxito
-
-        else:
-            cliente_form = ClienteForm()
-            vehiculo_form = VehiculoForm()
-            orden_form = OrdenTercerosForm()
-            imagen_form = ImagenVehiculoForm()
-
-        return render(request, 'orden/crear_orden.html', {
-            'cliente_form': cliente_form,
-            'vehiculo_form': vehiculo_form,
-            'orden_form': orden_form,
-            'imagen_form': imagen_form,
-        })
-    
+        tipo_orden = 'Terceros'
+        orden_form_class = OrdenTercerosForm
     elif 'riesgo' in request.GET:
-        if request.method == 'POST':
-            cliente_form = ClienteForm(request.POST)
-            vehiculo_form = VehiculoForm(request.POST)
-            orden_form = OrdenRiesgoForm(request.POST)
-            imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
-
-            if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
-                # Crear cliente
-                cliente = cliente_form.save()
-
-                # Crear vehículo
-                vehiculo = vehiculo_form.save()
-
-                # Crear orden
-                orden = orden_form.save(commit=False)
-                orden.cliente = cliente
-                orden.vehiculo = vehiculo
-                orden.estado = '1'
-                orden.save()
-
-                # Guardar imágenes de vehículo (manejo de múltiples archivos)
-                for img in request.FILES.getlist('imagen'):  # Iterar sobre las imágenes
-                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
-
-                return redirect('orden:list')  # Redirigir a alguna página de éxito
-
-        else:
-            cliente_form = ClienteForm()
-            vehiculo_form = VehiculoForm()
-            orden_form = OrdenRiesgoForm()
-            imagen_form = ImagenVehiculoForm()
-
-        return render(request, 'orden/crear_orden.html', {
-            'cliente_form': cliente_form,
-            'vehiculo_form': vehiculo_form,
-            'orden_form': orden_form,
-            'imagen_form': imagen_form,
-        })
-        
+        tipo_orden = 'Riesgo'
+        orden_form_class = OrdenRiesgoForm
     elif 'recupero' in request.GET:
-        if request.method == 'POST':
-            cliente_form = ClienteForm(request.POST)
-            vehiculo_form = VehiculoForm(request.POST)
-            orden_form = OrdenRecuperoForm(request.POST)
-            imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
-
-            if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
-                # Crear cliente
-                cliente = cliente_form.save()
-
-                # Crear vehículo
-                vehiculo = vehiculo_form.save()
-
-                # Crear orden
-                orden = orden_form.save(commit=False)
-                orden.cliente = cliente
-                orden.vehiculo = vehiculo
-                orden.estado = '1'
-                orden.save()
-
-                # Guardar imágenes de vehículo (manejo de múltiples archivos)
-                for img in request.FILES.getlist('imagen'):  # Iterar sobre las imágenes
-                    ImagenVehiculo.objects.create(orden=orden, imagen=img)
-
-                return redirect('orden:list')  # Redirigir a alguna página de éxito
-
-        else:
-            cliente_form = ClienteForm()
-            vehiculo_form = VehiculoForm()
-            orden_form = OrdenRecuperoForm()
-            imagen_form = ImagenVehiculoForm()
-
-        return render(request, 'orden/crear_orden.html', {
-            'cliente_form': cliente_form,
-            'vehiculo_form': vehiculo_form,
-            'orden_form': orden_form,
-            'imagen_form': imagen_form,
-        })
-    
+        tipo_orden = 'Recupero'
+        orden_form_class = OrdenRecuperoForm
     else:
         return render(request, 'orden/elegir-cobertura.html')
 
+    if request.method == 'POST':
+        # Crear formularios
+        cliente_form = ClienteForm(request.POST)
+        vehiculo_form = VehiculoForm(request.POST)
+        orden_form = orden_form_class(request.POST)
+        imagen_form = ImagenVehiculoForm(request.POST, request.FILES)
+
+        if cliente_form.is_valid() and vehiculo_form.is_valid() and orden_form.is_valid():
+            # Crear cliente y vehículo
+            cliente = cliente_form.save()
+            vehiculo = vehiculo_form.save()
+
+            # Crear orden
+            orden = orden_form.save(commit=False)
+            orden.cliente = cliente
+            orden.vehiculo = vehiculo
+            orden.estado = '1'  # El estado predeterminado
+            orden.save()
+
+            # Guardar imágenes de vehículo (manejo de múltiples archivos)
+            for img in request.FILES.getlist('imagen'):
+                ImagenVehiculo.objects.create(orden=orden, imagen=img)
+
+            return redirect('orden:list')  # Redirigir a alguna página de éxito
+    else:
+        # Inicializar los formularios vacíos
+        cliente_form = ClienteForm()
+        vehiculo_form = VehiculoForm()
+        orden_form = orden_form_class()
+        imagen_form = ImagenVehiculoForm()
+
+    return render(request, 'orden/crear_orden.html', {
+        'cliente_form': cliente_form,
+        'vehiculo_form': vehiculo_form,
+        'orden_form': orden_form,
+        'imagen_form': imagen_form,
+    })
+
+
 
 def ver_orden(request, codigo):
+    orden = obtener_orden(codigo)
 
-    tipo_orden = codigo.split('-')[1]
-    
-    orden = None
-    estados = None
-    presupuesto = None
-    
-    if tipo_orden == '1':
-        orden = OrdenParticular.objects.filter(codigo=codigo).first()
-        estados = OrdenParticular.ESTADOS_CHOICES
-    elif tipo_orden == '2':
-        orden = OrdenTerceros.objects.filter(codigo=codigo).first()
-        estados = OrdenTerceros.ESTADOS_CHOICES
-    elif tipo_orden == '3':
-        orden = OrdenRiesgo.objects.filter(codigo=codigo).first()
-        estados = OrdenRiesgo.ESTADOS_CHOICES
-    elif tipo_orden == '4':
-        orden = OrdenRecupero.objects.filter(codigo=codigo).first()
-        estados = OrdenRecupero.ESTADOS_CHOICES
-        
     if not orden:
         return render(request, 'error.html', {'message': 'Orden no encontrada'})
-    
-    # Obtener el ContentType de la orden específica
-    content_type = ContentType.objects.get_for_model(orden)
-    
-    # Recuperar las imágenes asociadas con la orden mediante GenericForeignKey
-    imagenes = ImagenVehiculo.objects.filter(content_type=content_type, object_id=orden.id)
-    servicios = Servicio.objects.filter(content_type=content_type, object_id=orden.id)
-    presupuesto = Presupuesto.objects.filter(content_type=content_type, object_id=orden.id).first()
-    
-    estados_dict = dict(estados)
-    estado_actual = orden.estado
-    estados_lista = list(estados_dict.keys())  # Lista de los códigos de estado
-    
-    try:
-        index_estado_actual = estados_lista.index(estado_actual)
-    except ValueError:
-        index_estado_actual = None
-        
-    # Obtener el siguiente y anterior estado, si existen
-    siguiente_estado = None
-    anterior_estado = None
-    if index_estado_actual is not None:
-        if index_estado_actual + 1 < len(estados_lista):
-            siguiente_estado = estados_lista[index_estado_actual + 1]
-        if index_estado_actual - 1 >= 0:
-            anterior_estado = estados_lista[index_estado_actual - 1]
-    
+
+    # Obtener imágenes, servicios y presupuesto a través de los métodos del modelo
+    imagenes = orden.obtener_imagenes()
+    servicios = orden.obtener_servicios()
+    presupuesto = orden.obtener_presupuesto()
+
+    # Obtener la información de los estados directamente desde el modelo
+    estados_dict, estado_actual, siguiente_estado, anterior_estado = orden.obtener_estado_info()
+
     return render(request, 'orden/ver_orden.html', {
-        'orden':orden,
-        'imagenes':imagenes,
-        'servicios':servicios,
+        'orden': orden,
+        'imagenes': imagenes,
+        'servicios': servicios,
         'estados_dict': estados_dict,
         'estado_actual': estado_actual,
         'siguiente_estado': siguiente_estado,
         'anterior_estado': anterior_estado,
         'presupuesto': presupuesto
-        })
+    })
 
 
 def cambiar_estado(request, codigo, estado):
-    tipo_orden = codigo.split('-')[1]
-
-    modelos = {
-        '1': OrdenParticular,
-        '2': OrdenTerceros,
-        '3': OrdenRiesgo,
-        '4': OrdenRecupero,
-    }
-
-    modelo = modelos.get(tipo_orden)
-    if not modelo:
-        return JsonResponse({'success': False, 'error': 'Tipo de orden inválido'}, status=400)
-
-    orden = get_object_or_404(modelo, codigo=codigo)
+    orden = obtener_orden(codigo)
     orden.estado = estado
     orden.save()
 
@@ -306,20 +156,8 @@ def cambiar_estado(request, codigo, estado):
     return redirect('orden:detail', codigo=codigo)
 
 def eliminar_orden(request, codigo):
-    tipo_orden = codigo.split('-')[1]
+    orden = obtener_orden(codigo)
     
-    orden = None
-    
-    if tipo_orden == '1':
-        orden = OrdenParticular.objects.filter(codigo=codigo).first()
-    elif tipo_orden == '2':
-        orden = OrdenTerceros.objects.filter(codigo=codigo).first()
-    elif tipo_orden == '3':
-        orden = OrdenRiesgo.objects.filter(codigo=codigo).first()
-    elif tipo_orden == '4':
-        orden = OrdenRecupero.objects.filter(codigo=codigo).first()
-        
-        
     try:
         # Eliminar la orden
         orden.delete()
@@ -335,128 +173,55 @@ def eliminar_orden(request, codigo):
     return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes
 
 
+
 def crear_servicio(request, codigo):
-    # Determinar el tipo de orden basado en el código
-    tipo_orden = codigo.split('-')[1]
-    
-    # Mapeo de tipos de orden a modelos
-    modelos_orden = {
-        '1': OrdenParticular,
-        '2': OrdenTerceros,
-        '3': OrdenRiesgo,
-        '4': OrdenRecupero,
-    }
-    
-    # Obtener el modelo correcto
-    modelo_orden = modelos_orden.get(tipo_orden)
-    if not modelo_orden:
-        messages.error(request, 'Tipo de orden no válido')
-        return redirect('orden:list')
-    
-    # Obtener la orden específica
-    orden = get_object_or_404(modelo_orden, codigo=codigo)
-    
-    # Verificar si ya existe un presupuesto para esta orden
-    content_type = ContentType.objects.get_for_model(orden)
-    
+    orden = obtener_orden(codigo)
+
     if request.method == 'POST':
         form = CrearServicioForm(request.POST)
         if form.is_valid():
-            servicio = form.save(commit=False)
-            servicio.content_type = content_type
-            servicio.object_id = orden.id
-            servicio.save()
+            form_data = form.cleaned_data  # Obtienes los datos del formulario
+            servicio = Servicio.crear_servicio(orden, form_data)
             messages.success(request, 'Servicio creado exitosamente')
             return redirect('orden:detail', codigo=codigo)
     else:
         form = CrearServicioForm()
-    
-    return render(request, 'orden/crear_servicio.html', {
-        'form': form,
-        'orden': orden
-    })
+
+    return render(request, 'orden/crear_servicio.html', {'form': form, 'orden': orden})
+
 
 def crear_presupuesto(request, codigo):
-    # Determinar el tipo de orden basado en el código
-    tipo_orden = codigo.split('-')[1]
-    
-    # Mapeo de tipos de orden a modelos
-    modelos_orden = {
-        '1': OrdenParticular,
-        '2': OrdenTerceros,
-        '3': OrdenRiesgo,
-        '4': OrdenRecupero,
-    }
-    
-    # Obtener el modelo correcto
-    modelo_orden = modelos_orden.get(tipo_orden)
-    if not modelo_orden:
-        messages.error(request, 'Tipo de orden no válido')
-        return redirect('orden:list')
-    
-    # Obtener la orden específica
-    orden = get_object_or_404(modelo_orden, codigo=codigo)
-    
-    # Verificar si ya existe un presupuesto para esta orden
-    content_type = ContentType.objects.get_for_model(orden)
-    if Presupuesto.objects.filter(content_type=content_type, object_id=orden.id).exists():
-        messages.warning(request, 'Esta orden ya tiene un presupuesto asociado')
-        return redirect('orden:detail', codigo=codigo)
+    orden = obtener_orden(codigo)
     
     if request.method == 'POST':
         form = CrearPresupuestoForm(request.POST)
         if form.is_valid():
-            presupuesto = form.save(commit=False)
-            presupuesto.content_type = content_type
-            presupuesto.object_id = orden.id
-            presupuesto.save()
+            form_data = form.cleaned_data  # Obtienes los datos del formulario
+            presupuesto = Presupuesto.crear_presupuesto(orden, form_data)
+            
+            if presupuesto is None:
+                messages.warning(request, 'Esta orden ya tiene un presupuesto asociado')
+                return redirect('orden:detail', codigo=codigo)
+
             messages.success(request, 'Presupuesto creado exitosamente')
             return redirect('orden:detail', codigo=codigo)
     else:
         form = CrearPresupuestoForm()
     
-    return render(request, 'orden/crear_presupuesto.html', {
-        'form': form,
-        'orden': orden
-    })
+    return render(request, 'orden/crear_presupuesto.html', {'form': form, 'orden': orden})
+
+
 
 def eliminar_presupuesto(request, codigo):
-    # Determinar el tipo de orden basado en el código
-    tipo_orden = codigo.split('-')[1]
+    orden = obtener_orden(codigo)
     
-    # Mapeo de tipos de orden a modelos
-    modelos_orden = {
-        '1': OrdenParticular,
-        '2': OrdenTerceros,
-        '3': OrdenRiesgo,
-        '4': OrdenRecupero,
-    }
-    
-    # Obtener el modelo correcto
-    modelo_orden = modelos_orden.get(tipo_orden)
-    if not modelo_orden:
-        messages.error(request, 'Tipo de orden no válido')
-        return redirect('orden:list')
-    
-    # Obtener la orden específica
-    orden = get_object_or_404(modelo_orden, codigo=codigo)
-    
-    # Verificar si ya existe un presupuesto para esta orden
-    content_type = ContentType.objects.get_for_model(orden)
-    presupuesto = Presupuesto.objects.filter(content_type=content_type, object_id=orden.id)
-    
-    try:
-        # Eliminar el presupuesto
-        presupuesto.delete()
-
-        # Mensaje de éxito
+    if Presupuesto.eliminar_presupuesto(orden):
         messages.success(request, "El presupuesto ha sido eliminado con éxito.")
-    
-    except Presupuesto.DoesNotExist:
-        # Si el presupuesto no existe
+    else:
         messages.error(request, "El presupuesto que intentas eliminar no existe.")
     
     return redirect('orden:detail', codigo=codigo)
+
 
 
 def generar_presupuesto_pdf(request, presupuesto_id):
