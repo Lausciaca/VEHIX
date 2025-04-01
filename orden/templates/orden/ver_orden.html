@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load humanize %}
 
 {% load static %}
 {% block content %}
@@ -33,25 +34,35 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="{% static '/orden/ver_orden.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/orden/css/ver_orden.css' %}">
 <div class="container my-3">
     <div class="header d-flex justify-content-between align-items-center">
         <div class="texto d-flex flex-column">
             <h3 class="fw-bolder m-0">Orden de {{orden.cliente}} - {{orden.cobertura}}</h3>
             <p class="text-body-secondary">Gestiona todas las ordenes del taller</p>
         </div>
-        <div class="">
+        <div class="d-flex flex-row gap-2">
+            <a href='{% url 'orden:crear_servicio' orden.codigo %}'>
+                <button type="button" class="btn btn-primary">Añadir servicio</button>
+            </a>
+            {% if presupuesto %}
+              
+            {% else %}
+            <a href='{% url 'orden:crear_presupuesto' orden.codigo %}'>
+                <button type="button" class="btn btn-danger">Presupuestar</button>
+            </a>
+            {% endif %}
             <a href='{% url 'orden:delete' orden.codigo %}'>
-                <button type="button" class="btn btn-danger">Eliminar</button>
+                <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
             </a>
         </div>
     </div>
     <div class="d-flex gap-3 flex-row mb-5 flex-wrap h-100 justify-content-between">
 
-        
+         
         <div class="card p-2 w-100">
             <div class="card-body">
-                {% include "orden/timeline.html" %}
+                {% include "orden/includes/timeline.html" %}
             </div>
         </div>
         <div class="w-100 d-flex gap-2 flex-row">
@@ -60,7 +71,7 @@
                 <!-- DATOS PERSONALES -->
                 <div class="card p-2 flex-grow-1">
                     <div class="card-body">
-                        <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
+                        <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-user"></i> Datos del cliente</h5>
                         <div class="d-flex">
                             <div class="w-100 py-2">
                                 <label for="id_nombre">Nombre</label>
@@ -98,17 +109,42 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- SERVICIOS DEL VEHICULO -->
+                <div class="card p-2 flex-grow-1">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-solid fa-screwdriver-wrench"></i> Servicios</h5>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Servicio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for servicio in servicios %}
+                                    <tr>
+                                        <th scope="row">{{ servicio.id }}</th>
+                                        <td>{{ servicio.servicio }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="2" class="text-center">No se encontraron servicios.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <!-- Lado derecho: Datos del cliente y vehículo -->
             <div class="right">
                 <!-- PAGO -->
                 <div class="card py-2 px-2 flex-grow-1 h-100">
                     <div class="card-body">
-                        <h5 class="card-title fw-bold my-2 d-flex gap-1 align-items-center">Resumen de pago</h5>
+                        <h4 class="card-title fw-bold my-2 d-flex gap-1 align-items-center">Resumen de pago</h4>
                         <div class="d-flex w-100 flex-column contenedor-pago">
                             <div class="d-flex w-100 fw-bold justify-content-between top">
                                 <p>Total a pagar</p>
-                                <p>$</p>
+                                <p>{% if presupuesto %}${{ presupuesto.monto|floatformat:0|intcomma }}{% else %}${% endif %}</p>
                             </div>
                             <div class="mid">
                                 <p>Pagos realizados</p>
@@ -119,6 +155,20 @@
                                     <li>$</li>
                                 </ul>
                             </div>
+                            <div class="w-100 fw-bold bottom">
+                                <hr>
+                                <div class="d-flex flex-row justify-content-between">
+                                    <p>Restante</p>
+                                    <p class="text-danger">$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card py-2 px-2 flex-grow-1 h-100">
+                    <div class="card-body">
+                        <h4 class="card-title fw-bold my-2 d-flex gap-1 align-items-center">Presupuesto</h4>
+                        <div class="d-flex w-100 flex-column contenedor-pago">
                             <div class="w-100 fw-bold bottom">
                                 <hr>
                                 <div class="d-flex flex-row justify-content-between">
@@ -157,4 +207,5 @@
         </div>
     </div>
 </div>
+
 {% endblock content %}

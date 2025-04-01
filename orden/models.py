@@ -130,3 +130,23 @@ class ImagenVehiculo(models.Model):
 
     def __str__(self):
         return f"Imagen de {self.orden}"
+    
+    
+class Servicio(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    orden = GenericForeignKey('content_type', 'object_id')
+    servicio = models.CharField(max_length=500)
+
+    
+    
+class Presupuesto(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    orden = GenericForeignKey('content_type', 'object_id')
+    
+    created = models.DateTimeField(auto_now_add=True)
+    monto = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        unique_together = ('content_type', 'object_id')  # Para evitar múltiples presupuestos por orden

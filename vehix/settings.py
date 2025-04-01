@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'core',
     'orden',
     'cliente',
-    'vehiculo'
+    'vehiculo',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

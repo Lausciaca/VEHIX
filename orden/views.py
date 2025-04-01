@@ -7,10 +7,20 @@ from .forms import *
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
+import fitz  # PyMuPDF
+from django.http import HttpResponse
+import io
 
 
 from itertools import chain
 
+def tiene_presupuesto(orden):
+    content_type = ContentType.objects.get_for_model(orden)
+    return Presupuesto.objects.filter(
+        content_type=content_type,
+        object_id=orden.id
+    ).exists()
+    
 def obtener_todas_las_ordenes():
     # Recuperar todas las órdenes de cada tipo
     ordenes_particulares = OrdenParticular.objects.all()
@@ -214,6 +224,7 @@ def ver_orden(request, codigo):
     
     orden = None
     estados = None
+    presupuesto = None
     
     if tipo_orden == '1':
         orden = OrdenParticular.objects.filter(codigo=codigo).first()
@@ -236,6 +247,8 @@ def ver_orden(request, codigo):
     
     # Recuperar las imágenes asociadas con la orden mediante GenericForeignKey
     imagenes = ImagenVehiculo.objects.filter(content_type=content_type, object_id=orden.id)
+    servicios = Servicio.objects.filter(content_type=content_type, object_id=orden.id)
+    presupuesto = Presupuesto.objects.filter(content_type=content_type, object_id=orden.id).first()
     
     estados_dict = dict(estados)
     estado_actual = orden.estado
@@ -258,10 +271,12 @@ def ver_orden(request, codigo):
     return render(request, 'orden/ver_orden.html', {
         'orden':orden,
         'imagenes':imagenes,
+        'servicios':servicios,
         'estados_dict': estados_dict,
         'estado_actual': estado_actual,
         'siguiente_estado': siguiente_estado,
         'anterior_estado': anterior_estado,
+        'presupuesto': presupuesto
         })
 
 
@@ -318,3 +333,119 @@ def eliminar_orden(request, codigo):
 
     # Redirigir a una página de lista o donde se gestione la visualización de las órdenes
     return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes
+
+
+def crear_servicio(request, codigo):
+    # Determinar el tipo de orden basado en el código
+    tipo_orden = codigo.split('-')[1]
+    
+    # Mapeo de tipos de orden a modelos
+    modelos_orden = {
+        '1': OrdenParticular,
+        '2': OrdenTerceros,
+        '3': OrdenRiesgo,
+        '4': OrdenRecupero,
+    }
+    
+    # Obtener el modelo correcto
+    modelo_orden = modelos_orden.get(tipo_orden)
+    if not modelo_orden:
+        messages.error(request, 'Tipo de orden no válido')
+        return redirect('orden:list')
+    
+    # Obtener la orden específica
+    orden = get_object_or_404(modelo_orden, codigo=codigo)
+    
+    # Verificar si ya existe un presupuesto para esta orden
+    content_type = ContentType.objects.get_for_model(orden)
+    
+    if request.method == 'POST':
+        form = CrearServicioForm(request.POST)
+        if form.is_valid():
+            servicio = form.save(commit=False)
+            servicio.content_type = content_type
+            servicio.object_id = orden.id
+            servicio.save()
+            messages.success(request, 'Servicio creado exitosamente')
+            return redirect('orden:detail', codigo=codigo)
+    else:
+        form = CrearServicioForm()
+    
+    return render(request, 'orden/crear_servicio.html', {
+        'form': form,
+        'orden': orden
+    })
+
+def crear_presupuesto(request, codigo):
+    # Determinar el tipo de orden basado en el código
+    tipo_orden = codigo.split('-')[1]
+    
+    # Mapeo de tipos de orden a modelos
+    modelos_orden = {
+        '1': OrdenParticular,
+        '2': OrdenTerceros,
+        '3': OrdenRiesgo,
+        '4': OrdenRecupero,
+    }
+    
+    # Obtener el modelo correcto
+    modelo_orden = modelos_orden.get(tipo_orden)
+    if not modelo_orden:
+        messages.error(request, 'Tipo de orden no válido')
+        return redirect('orden:list')
+    
+    # Obtener la orden específica
+    orden = get_object_or_404(modelo_orden, codigo=codigo)
+    
+    # Verificar si ya existe un presupuesto para esta orden
+    content_type = ContentType.objects.get_for_model(orden)
+    if Presupuesto.objects.filter(content_type=content_type, object_id=orden.id).exists():
+        messages.warning(request, 'Esta orden ya tiene un presupuesto asociado')
+        return redirect('orden:detail', codigo=codigo)
+    
+    if request.method == 'POST':
+        form = CrearPresupuestoForm(request.POST)
+        if form.is_valid():
+            presupuesto = form.save(commit=False)
+            presupuesto.content_type = content_type
+            presupuesto.object_id = orden.id
+            presupuesto.save()
+            messages.success(request, 'Presupuesto creado exitosamente')
+            return redirect('orden:detail', codigo=codigo)
+    else:
+        form = CrearPresupuestoForm()
+    
+    return render(request, 'orden/crear_presupuesto.html', {
+        'form': form,
+        'orden': orden
+    })
+
+
+def generar_presupuesto_pdf(request, presupuesto_id):
+    # Obtener el presupuesto
+    from orden.models import Presupuesto
+    presupuesto = Presupuesto.objects.get(id=presupuesto_id)
+
+    # Cargar el PDF existente
+    template_path = "/static/orden/presupuesto.pdf"  # Cambia esto
+    doc = fitz.open(template_path)
+    page = doc[0]  # Primera página del PDF
+
+    # Insertar datos en el PDF (ajustar posiciones según el diseño)
+    page.insert_text((100, 150), f"Presupuesto: {presupuesto.id}", fontsize=12)
+    page.insert_text((100, 170), f"Fecha: {presupuesto.created.strftime('%d/%m/%Y')}", fontsize=12)
+    page.insert_text((100, 190), f"Localidad: {presupuesto.localidad}", fontsize=12)
+    page.insert_text((100, 210), f"Responsable: {presupuesto.responsable}", fontsize=12)
+    page.insert_text((100, 230), f"Pago: {presupuesto.pago}", fontsize=12)
+    page.insert_text((100, 250), f"Monto: ${presupuesto.monto}", fontsize=12)
+
+    # Guardar el PDF en memoria
+    output = io.BytesIO()
+    doc.save(output)
+    doc.close()
+    output.seek(0)
+
+    # Devolver el PDF como respuesta HTTP
+    response = HttpResponse(output, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="presupuesto_{presupuesto.id}.pdf"'
+    return response

@@ -1,8 +1,8 @@
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static '/orden/timeline.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/orden/css/timeline.css' %}">
 <div id="timeline-container">
     <div class="timeline-header">
-        <h5 class="card-title fw-bold d-flex gap-1 align-items-center"><i class="fa-solid fa-list-check"></i> Progreso</h5>
+        <h5 class="card-title fw-bold d-flex gap-2 align-items-center"><i class="fa-solid fa-list-check"></i> Progreso</h5>
         <div class="d-flex gap-2">
             {% if anterior_estado %}
             <a href="{% url 'orden:cambiar_estado' orden.codigo anterior_estado %}" class="btn-estado estado-anterior"><i class="fa-solid fa-arrow-left"></i>Anterior</a>

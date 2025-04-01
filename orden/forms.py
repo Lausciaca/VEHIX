@@ -52,3 +52,32 @@ class ImagenVehiculoForm(forms.ModelForm):
     class Meta:
         model = ImagenVehiculo
         fields = ['imagen']
+        
+        
+
+class CrearPresupuestoForm(forms.ModelForm):
+    class Meta:
+        model = Presupuesto
+        fields = ['monto']
+        widgets = {
+            'monto': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0'
+            }),
+        }
+        labels = {
+            'monto': 'Monto del Presupuesto ($)',
+        }
+        
+
+class CrearServicioForm(forms.ModelForm):
+    class Meta:
+        model = Servicio
+        fields = ['servicio']
+        widgets = {
+            'servicio': forms.TextInput(attrs={'placeholder': 'Servicio a realizar'})  # Si necesitas algún tipo de widget específico
+        }
+        labels = {
+            'servicio': 'Servicio a realizar',
+        }

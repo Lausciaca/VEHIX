@@ -58,6 +58,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    gap: 1rem;
 }
 .contenedor-pago {
     display: flex;
