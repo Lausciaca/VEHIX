@@ -81,3 +81,19 @@ class CrearServicioForm(forms.ModelForm):
         labels = {
             'servicio': 'Servicio a realizar',
         }
+
+
+class CrearPagoForm(forms.ModelForm):
+    class Meta:
+        model = Pago
+        fields = ['monto']
+        widgets = {
+            'monto': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0'
+            }),
+        }
+        labels = {
+            'monto': 'Monto del pago ($)',
+        }

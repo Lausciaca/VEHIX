@@ -46,7 +46,7 @@
                 <button type="button" class="btn btn-primary">Añadir servicio</button>
             </a>
 
-            <a href=''>
+            <a href='{% url 'orden:crear_pago' orden.codigo %}'>
                 <button type="button" class="btn btn-success">Añadir pago</button>
             </a>
             
@@ -117,6 +117,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Servicio</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -124,6 +125,7 @@
                                     <tr>
                                         <th scope="row">{{ servicio.id }}</th>
                                         <td>{{ servicio.servicio }}</td>
+                                        <td><a href="{% url 'orden:eliminar_servicio' orden.codigo servicio.id %}" class="text-danger">Eliminar</a></td>
                                     </tr>
                                 {% empty %}
                                     <tr><td colspan="2" class="text-center">No se encontraron servicios.</td></tr>
@@ -146,15 +148,32 @@
                             </div>
                             <div class="mid">
                                 <p>Pagos realizados</p>
-                                <ul>
-                                    <li>$</li>
-                                </ul>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Fecha</th>
+                                            <th scope="col">Monto</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pago in pagos %}
+                                            <tr>
+                                                <th scope="row">{{pago.created|date:'d/m/Y'}}</th>
+                                                <td>${{pago.monto|floatformat:0|intcomma}}</td>
+                                                <td><a href="{% url 'orden:eliminar_pago' orden.codigo pago.id %}" class="text-danger">Eliminar</a></td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr><td colspan="3" class="text-center">No se encontraron pagos.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="w-100 fw-bold bottom">
                                 <hr>
                                 <div class="d-flex flex-row justify-content-between">
                                     <p>Restante</p>
-                                    <p class="text-danger">$</p>
+                                    <p class="text-danger">${{monto_restante|floatformat:0|intcomma}}</p>
                                 </div>
                             </div>
                         </div>

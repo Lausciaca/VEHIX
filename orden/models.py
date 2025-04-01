@@ -29,6 +29,10 @@ class OrdenBase(models.Model):
         content_type = ContentType.objects.get_for_model(self)
         return Servicio.objects.filter(content_type=content_type, object_id=self.id)
     
+    def obtener_pagos(self):
+        content_type = ContentType.objects.get_for_model(self)
+        return Pago.objects.filter(content_type=content_type, object_id=self.id)
+    
     def obtener_estado_info(self):
         # Lógica para obtener los estados y el estado actual
         estados_dict = dict(self.ESTADOS_CHOICES)
@@ -174,6 +178,33 @@ class Servicio(models.Model):
         servicio = cls(content_type=content_type, object_id=orden.id, **datos)
         servicio.save()
         return servicio
+
+    @classmethod
+    def eliminar_servicio(cls, servicio):
+        if servicio:
+            servicio.delete()
+            return True
+        return False
+    
+class Pago(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    orden =  GenericForeignKey('content_type', 'object_id')
+    monto = models.DecimalField(max_digits=12, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    @classmethod
+    def crear_pago(cls, orden, datos):
+        content_type = ContentType.objects.get_for_model(orden)
+        pago = cls(content_type=content_type, object_id=orden.id, **datos)
+        pago.save()
+        return pago
+    @classmethod
+    def eliminar_pago(cls, pago):
+        if pago:
+            pago.delete()
+            return True
+        return False
 
     
     

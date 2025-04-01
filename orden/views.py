@@ -127,7 +127,15 @@ def ver_orden(request, codigo):
     imagenes = orden.obtener_imagenes()
     servicios = orden.obtener_servicios()
     presupuesto = orden.obtener_presupuesto()
+    pagos = orden.obtener_pagos()
 
+    # Calcular el total pagado
+    total_pagado = sum(pago.monto for pago in pagos)
+
+    # Calcular el monto restante
+    monto_restante = presupuesto.monto - total_pagado if presupuesto else 0
+    
+    
     # Obtener la información de los estados directamente desde el modelo
     estados_dict, estado_actual, siguiente_estado, anterior_estado = orden.obtener_estado_info()
 
@@ -135,11 +143,13 @@ def ver_orden(request, codigo):
         'orden': orden,
         'imagenes': imagenes,
         'servicios': servicios,
+        'pagos': pagos,
         'estados_dict': estados_dict,
         'estado_actual': estado_actual,
         'siguiente_estado': siguiente_estado,
         'anterior_estado': anterior_estado,
-        'presupuesto': presupuesto
+        'presupuesto': presupuesto,
+        'monto_restante': monto_restante  # Pasamos el dato al template
     })
 
 
@@ -173,7 +183,7 @@ def eliminar_orden(request, codigo):
     return redirect('orden:list')  # Reemplaza 'ordenes_lista' con el nombre de la vista de lista de órdenes
 
 
-
+# Servicio
 def crear_servicio(request, codigo):
     orden = obtener_orden(codigo)
 
@@ -188,8 +198,43 @@ def crear_servicio(request, codigo):
         form = CrearServicioForm()
 
     return render(request, 'orden/crear_servicio.html', {'form': form, 'orden': orden})
+def eliminar_servicio(request, codigo, servicio_id):
+    try:
+        servicio = Servicio.objects.get(id=servicio_id)  # Obtener la instancia
+        codigo = servicio.orden.codigo  # Obtener el código de la orden (asegúrate de que `orden` tenga un campo `codigo`)
+        Servicio.eliminar_servicio(servicio)  # Llamar al método correctamente
+        return redirect('orden:detail', codigo=codigo)
+    except Servicio.DoesNotExist:
+        return JsonResponse({"error": "Servicio no encontrado"}, status=404)
 
 
+# Pago
+def crear_pago(request, codigo):
+    orden = obtener_orden(codigo)
+
+    if request.method == 'POST':
+        form = CrearPagoForm(request.POST)
+        if form.is_valid():
+            form_data = form.cleaned_data  # Obtienes los datos del formulario
+            pago = Pago.crear_pago(orden, form_data)
+            messages.success(request, 'Pago creado exitosamente')
+            return redirect('orden:detail', codigo=codigo)
+    else:
+        form = CrearPagoForm()
+
+    return render(request, 'orden/crear_pago.html', {'form': form, 'orden': orden})
+
+def eliminar_pago(request, codigo, pago_id):
+    try:
+        pago = Pago.objects.get(id=pago_id)  # Obtener la instancia
+        codigo = pago.orden.codigo  # Obtener el código de la orden (asegúrate de que `orden` tenga un campo `codigo`)
+        Pago.eliminar_pago(pago)  # Llamar al método correctamente
+        return redirect('orden:detail', codigo=codigo)
+    except Pago.DoesNotExist:
+        return JsonResponse({"error": "Pago no encontrado"}, status=404)
+
+
+# Presupuesto
 def crear_presupuesto(request, codigo):
     orden = obtener_orden(codigo)
     
@@ -209,9 +254,6 @@ def crear_presupuesto(request, codigo):
         form = CrearPresupuestoForm()
     
     return render(request, 'orden/crear_presupuesto.html', {'form': form, 'orden': orden})
-
-
-
 def eliminar_presupuesto(request, codigo):
     orden = obtener_orden(codigo)
     
@@ -221,8 +263,6 @@ def eliminar_presupuesto(request, codigo):
         messages.error(request, "El presupuesto que intentas eliminar no existe.")
     
     return redirect('orden:detail', codigo=codigo)
-
-
 
 def generar_presupuesto_pdf(request, presupuesto_id):
     # Obtener el presupuesto
