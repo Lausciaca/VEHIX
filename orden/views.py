@@ -1,17 +1,20 @@
 from .models import *
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from cliente.forms import ClienteForm
 from vehiculo.forms import VehiculoForm
 from .forms import *
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
-import fitz  # PyMuPDF
 from django.http import HttpResponse
 import io
+import os
+from django.conf import settings
+from django.http import HttpResponse
+from .filler import rellenar_pdf    
+from django.http import FileResponse
+    
 
-    
-    
 def obtener_orden(codigo):
         tipo_orden = codigo.split('-')[1]
         
@@ -223,7 +226,6 @@ def crear_pago(request, codigo):
         form = CrearPagoForm()
 
     return render(request, 'orden/crear_pago.html', {'form': form, 'orden': orden})
-
 def eliminar_pago(request, codigo, pago_id):
     try:
         pago = Pago.objects.get(id=pago_id)  # Obtener la instancia
@@ -264,31 +266,16 @@ def eliminar_presupuesto(request, codigo):
     
     return redirect('orden:detail', codigo=codigo)
 
-def generar_presupuesto_pdf(request, presupuesto_id):
+def generar_pdf_presupuesto(request, codigo, presupuesto_id):
     # Obtener el presupuesto
-    from orden.models import Presupuesto
-    presupuesto = Presupuesto.objects.get(id=presupuesto_id)
+    presupuesto = get_object_or_404(Presupuesto, id=presupuesto_id)
+    orden = obtener_orden(codigo)
 
-    # Cargar el PDF existente
-    template_path = "/static/orden/presupuesto.pdf"  # Cambia esto
-    doc = fitz.open(template_path)
-    page = doc[0]  # Primera página del PDF
+    # Si no tiene un PDF guardado, generarlo
+    if not presupuesto.archivo_pdf:
+        pdf_url = rellenar_pdf(orden, presupuesto)
+    else:
+        pdf_url = presupuesto.archivo_pdf.url
 
-    # Insertar datos en el PDF (ajustar posiciones según el diseño)
-    page.insert_text((100, 150), f"Presupuesto: {presupuesto.id}", fontsize=12)
-    page.insert_text((100, 170), f"Fecha: {presupuesto.created.strftime('%d/%m/%Y')}", fontsize=12)
-    page.insert_text((100, 190), f"Localidad: {presupuesto.localidad}", fontsize=12)
-    page.insert_text((100, 210), f"Responsable: {presupuesto.responsable}", fontsize=12)
-    page.insert_text((100, 230), f"Pago: {presupuesto.pago}", fontsize=12)
-    page.insert_text((100, 250), f"Monto: ${presupuesto.monto}", fontsize=12)
-
-    # Guardar el PDF en memoria
-    output = io.BytesIO()
-    doc.save(output)
-    doc.close()
-    output.seek(0)
-
-    # Devolver el PDF como respuesta HTTP
-    response = HttpResponse(output, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="presupuesto_{presupuesto.id}.pdf"'
-    return response
+    # Devolver el PDF como respuesta de descarga
+    return FileResponse(open(presupuesto.archivo_pdf.path, "rb"), as_attachment=True, filename=os.path.basename(presupuesto.archivo_pdf.path))

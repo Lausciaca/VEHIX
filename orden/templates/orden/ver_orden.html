@@ -193,7 +193,7 @@
                                     <p>${{ presupuesto.monto|floatformat:0|intcomma }}</p>
                                 </div>
                                 <div class="d-flex flex-row justify-content-end gap-2">
-                                    <a href="" class="btn btn-primary btn-presupuesto"><i class="fa-solid fa-download"></i></a>
+                                    <a href="{% url "orden:crear_pdf_presupuesto" orden.codigo presupuesto.id %}" class="btn btn-primary btn-presupuesto"><i class="fa-solid fa-download"></i></a>
                                     <a href="{% url 'orden:eliminar_presupuesto' orden.codigo %}" class="btn btn-danger btn-presupuesto"><i class="fa-solid fa-trash"></i></a>
                                 </div>
                             </div>

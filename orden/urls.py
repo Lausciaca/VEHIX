@@ -15,7 +15,7 @@ ordenpatterns = ([
     
     path('/orden/<slug:codigo>/crear-presupuesto/', crear_presupuesto, name='crear_presupuesto'),
     path('/orden/<slug:codigo>/eliminar-presupuesto/', eliminar_presupuesto, name='eliminar_presupuesto'),
-    
+    path('/orden/<slug:codigo>/crear-pdf-presupuesto/<int:presupuesto_id>', generar_pdf_presupuesto, name='crear_pdf_presupuesto'),
     
     path('/orden/cambiar_estado/<slug:codigo>/<str:estado>/', cambiar_estado, name='cambiar_estado'),
 ], 'orden')

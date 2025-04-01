@@ -216,6 +216,8 @@ class Presupuesto(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     monto = models.DecimalField(max_digits=12, decimal_places=2)
 
+    archivo_pdf = models.FileField(upload_to="presupuestos/", blank=True, null=True)
+
     class Meta:
         unique_together = ('content_type', 'object_id')  # Para evitar múltiples presupuestos por orden
 
