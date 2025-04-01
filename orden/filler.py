@@ -57,7 +57,7 @@ def rellenar_pdf(orden, presupuesto):
         data_dict[form_fields[13 + i]] = lineas_pdf[i] if i < len(lineas_pdf) else ""
 
     # Ruta de guardado
-    pdf_filename = f"{cliente}_{presupuesto.id}.pdf"
+    pdf_filename = f"{cliente}_{orden.codigo}.pdf"
     pdf_path = os.path.join("media/presupuestos", pdf_filename)
 
     # Llenar y guardar el PDF
