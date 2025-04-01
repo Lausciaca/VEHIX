@@ -15,6 +15,26 @@
                         Cliente: {{ orden.cliente.nombre }}<br>
                         Vehículo: {{ orden.vehiculo.marca }} {{ orden.vehiculo.modelo }}
                     </p>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Servicio</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for servicio in orden.obtener_servicios %}
+                                <tr>
+                                    <th scope="row">{{ servicio.id }}</th>
+                                    <td>{{ servicio.servicio }}</td>
+                                    <td><a href="{% url 'orden:eliminar_servicio' orden.codigo servicio.id %}" class="text-danger">Eliminar</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="3" class="text-center">No se encontraron servicios.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                     
                     <form method="post">
                         {% csrf_token %}
