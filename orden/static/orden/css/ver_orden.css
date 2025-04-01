@@ -50,12 +50,12 @@
 .left{
     width: 70%;
 }
-.right i, .left i, .fa-file{
+.fa-file, .left i, .fa-file{
     color: rgb(0, 89, 215);
 }
 .right {
     width: 30%;
-    height: 100%;
+    height: fit-content;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -78,4 +78,14 @@
 }
 .right .bottom {
     margin-top: 0px;
+}
+
+.btn-presupuesto{
+    color: white;
+}
+.btn-presupuestar{
+    border: none;
+    background-color: white;
+    text-decoration: underline;
+    color: rgb(0, 89, 215);
 }

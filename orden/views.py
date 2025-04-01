@@ -420,6 +420,44 @@ def crear_presupuesto(request, codigo):
         'orden': orden
     })
 
+def eliminar_presupuesto(request, codigo):
+    # Determinar el tipo de orden basado en el código
+    tipo_orden = codigo.split('-')[1]
+    
+    # Mapeo de tipos de orden a modelos
+    modelos_orden = {
+        '1': OrdenParticular,
+        '2': OrdenTerceros,
+        '3': OrdenRiesgo,
+        '4': OrdenRecupero,
+    }
+    
+    # Obtener el modelo correcto
+    modelo_orden = modelos_orden.get(tipo_orden)
+    if not modelo_orden:
+        messages.error(request, 'Tipo de orden no válido')
+        return redirect('orden:list')
+    
+    # Obtener la orden específica
+    orden = get_object_or_404(modelo_orden, codigo=codigo)
+    
+    # Verificar si ya existe un presupuesto para esta orden
+    content_type = ContentType.objects.get_for_model(orden)
+    presupuesto = Presupuesto.objects.filter(content_type=content_type, object_id=orden.id)
+    
+    try:
+        # Eliminar el presupuesto
+        presupuesto.delete()
+
+        # Mensaje de éxito
+        messages.success(request, "El presupuesto ha sido eliminado con éxito.")
+    
+    except Presupuesto.DoesNotExist:
+        # Si el presupuesto no existe
+        messages.error(request, "El presupuesto que intentas eliminar no existe.")
+    
+    return redirect('orden:detail', codigo=codigo)
+
 
 def generar_presupuesto_pdf(request, presupuesto_id):
     # Obtener el presupuesto

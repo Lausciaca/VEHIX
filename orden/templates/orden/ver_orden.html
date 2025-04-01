@@ -45,13 +45,11 @@
             <a href='{% url 'orden:crear_servicio' orden.codigo %}'>
                 <button type="button" class="btn btn-primary">Añadir servicio</button>
             </a>
-            {% if presupuesto %}
-              
-            {% else %}
-            <a href='{% url 'orden:crear_presupuesto' orden.codigo %}'>
-                <button type="button" class="btn btn-danger">Presupuestar</button>
+
+            <a href=''>
+                <button type="button" class="btn btn-success">Añadir pago</button>
             </a>
-            {% endif %}
+            
             <a href='{% url 'orden:delete' orden.codigo %}'>
                 <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
             </a>
@@ -150,9 +148,6 @@
                                 <p>Pagos realizados</p>
                                 <ul>
                                     <li>$</li>
-                                    <li>$</li>
-                                    <li>$</li>
-                                    <li>$</li>
                                 </ul>
                             </div>
                             <div class="w-100 fw-bold bottom">
@@ -167,16 +162,28 @@
                 </div>
                 <div class="card py-2 px-2 flex-grow-1 h-100">
                     <div class="card-body">
-                        <h4 class="card-title fw-bold my-2 d-flex gap-1 align-items-center">Presupuesto</h4>
-                        <div class="d-flex w-100 flex-column contenedor-pago">
-                            <div class="w-100 fw-bold bottom">
-                                <hr>
+                        <h5 class="card-title fw-bold my-2 d-flex gap-2 align-items-center"><i class="fa-regular fa-file"></i> Presupuesto</h5>
+                        {% if presupuesto %}
+                            <div class="d-flex w-100 flex-column">
+                                <div class="d-flex flex-row justify-content-between ">
+                                    <p class="text-body-secondary mb-0">Fecha de creación</p>
+                                    <p class="mb-0">{{presupuesto.created|date:'d/m/Y'}}</p>
+                                </div>
                                 <div class="d-flex flex-row justify-content-between">
-                                    <p>Restante</p>
-                                    <p class="text-danger">$</p>
+                                    <p class="text-body-secondary">Monto</p>
+                                    <p>${{ presupuesto.monto|floatformat:0|intcomma }}</p>
+                                </div>
+                                <div class="d-flex flex-row justify-content-end gap-2">
+                                    <a href="" class="btn btn-primary btn-presupuesto"><i class="fa-solid fa-download"></i></a>
+                                    <a href="{% url 'orden:eliminar_presupuesto' orden.codigo %}" class="btn btn-danger btn-presupuesto"><i class="fa-solid fa-trash"></i></a>
                                 </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <a href='{% url 'orden:crear_presupuesto' orden.codigo %}'>
+                                <button type="button" class="btn-presupuestar">Presupuestar</button>
+                            </a>
+                        {% endif %}
+                        
                     </div>
                 </div>
             </div>
