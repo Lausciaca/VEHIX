@@ -36,7 +36,7 @@ def rellenar_pdf(orden, presupuesto):
 
     # Crear diccionario con los datos
     data_dict = {
-        form_fields[0]: presupuesto.id,
+        form_fields[0]: orden.codigo,
         form_fields[1]: 1,
         form_fields[2]: fecha,
         form_fields[3]: cliente,
