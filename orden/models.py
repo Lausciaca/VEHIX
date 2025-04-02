@@ -64,7 +64,7 @@ class OrdenParticular(OrdenBase):
         ('1', 'Presupuesto'),
         ('2', 'Enviar a cliente'),
         ('3', 'Acordar turno'),
-        ('4', 'Ingresar al taller'),
+        ('4', 'En el taller'),
         ('5', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
@@ -89,7 +89,7 @@ class OrdenTerceros(OrdenBase):
         ('1', 'Presupuesto'),
         ('2', 'Enviar a cliente'),
         ('3', 'Acordar turno'),
-        ('4', 'Ingresar al taller'),
+        ('4', 'En el taller'),
         ('5', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
@@ -113,7 +113,7 @@ class OrdenRiesgo(OrdenBase):
         ('1', 'Presupuesto'),
         ('2', 'Enviar a seguro'),
         ('3', 'Acordar turno'),
-        ('4', 'Ingresar al taller'),
+        ('4', 'En el taller'),
         ('5', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
@@ -138,7 +138,7 @@ class OrdenRecupero(OrdenBase):
         ('2', 'Enviar carpeta'),
         ('3', 'Recibir y enviar poder firmado'),
         ('4', 'Acordar turno'),
-        ('5', 'Ingresar al taller'),
+        ('5', 'En el taller'),
         ('6', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
