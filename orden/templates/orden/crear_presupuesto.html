@@ -18,7 +18,6 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
                                 <th scope="col">Servicio</th>
                                 <th scope="col"></th>
                             </tr>
@@ -26,7 +25,6 @@
                         <tbody>
                             {% for servicio in orden.obtener_servicios %}
                                 <tr>
-                                    <th scope="row">{{ servicio.id }}</th>
                                     <td>{{ servicio.servicio }}</td>
                                     <td><a href="{% url 'orden:eliminar_servicio' orden.codigo servicio.id %}" class="text-danger">Eliminar</a></td>
                                 </tr>
