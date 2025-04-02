@@ -13,6 +13,8 @@ from django.conf import settings
 from django.http import HttpResponse
 from .filler import rellenar_pdf    
 from django.http import FileResponse
+from itertools import chain
+
     
 
 def obtener_orden(codigo):
@@ -31,35 +33,65 @@ def obtener_orden(codigo):
         
         return orden
     
+
 def obtener_todas_las_ordenes():
-    # Recuperar todas las órdenes de cada tipo
-    ordenes_particulares = OrdenParticular.objects.all()
-    ordenes_terceros = OrdenTerceros.objects.all()
-    ordenes_riesgo = OrdenRiesgo.objects.all()
-    ordenes_recupero = OrdenRecupero.objects.all()
+    return list(chain(
+        OrdenParticular.objects.all(),
+        OrdenTerceros.objects.all(),
+        OrdenRiesgo.objects.all(),
+        OrdenRecupero.objects.all()
+    ))
 
-    # Combinar todas las órdenes en una lista
-    todas_las_ordenes = list(ordenes_particulares) + list(ordenes_terceros) + list(ordenes_riesgo) + list(ordenes_recupero)
+def obtener_ordenes_activas():
+    ordenes = chain(
+        OrdenParticular.objects.all(),
+        OrdenTerceros.objects.all(),
+        OrdenRiesgo.objects.all(),
+        OrdenRecupero.objects.all()
+    )
+    
+    return [orden for orden in ordenes if not orden.es_entregado()]
 
-    return todas_las_ordenes
+
+def obtener_ordenes_terminadas():
+    ordenes = chain(
+        OrdenParticular.objects.all(),
+        OrdenTerceros.objects.all(),
+        OrdenRiesgo.objects.all(),
+        OrdenRecupero.objects.all()
+    )
+    
+    return [orden for orden in ordenes if orden.es_entregado()]
+
 
 def ordenes(request):
     form = OrdenSearchForm(request.GET)
-    ordenes = obtener_todas_las_ordenes()  # Esto devuelve una lista, no un QuerySet
+    ordenes_activas = obtener_ordenes_activas()
+    ordenes_terminadas = obtener_ordenes_terminadas()
+
+
 
     if form.is_valid() and form.cleaned_data['search']:
         search_term = form.cleaned_data['search'].lower()
 
         # Filtramos manualmente la lista usando list comprehension
-        ordenes = [
-            orden for orden in ordenes
+        ordenes_activas = [
+            orden for orden in ordenes_activas
+            if search_term in orden.vehiculo.modelo.lower()
+            or search_term in orden.vehiculo.marca.lower()
+            or search_term in orden.cliente.nombre.lower()
+        ]
+        ordenes_terminadas = [
+            orden for orden in ordenes_terminadas
             if search_term in orden.vehiculo.modelo.lower()
             or search_term in orden.vehiculo.marca.lower()
             or search_term in orden.cliente.nombre.lower()
         ]
 
-    return render(request, 'orden/ordenes.html', {'ordenes': ordenes})
-
+    return render(request, 'orden/ordenes.html', {
+        'ordenesActivas': ordenes_activas,
+        'ordenesTerminadas': ordenes_terminadas,
+        })
 
 
 def crear_orden(request):

@@ -17,6 +17,9 @@ class OrdenBase(models.Model):
         abstract = True  # Esto hará que esta clase sea abstracta y no genere una tabla en la base de datos
 
 
+    def es_entregado(self):
+        return self.estado == self.ESTADOS_CHOICES[-1][0]  # Obtiene la clave del último estado
+
     def obtener_imagenes(self):
         content_type = ContentType.objects.get_for_model(self)
         return ImagenVehiculo.objects.filter(content_type=content_type, object_id=self.id)
