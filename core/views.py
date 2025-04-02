@@ -13,7 +13,7 @@ def index(request):
     ultimas_3_ordenes = ordenes[:3]
     
     # Contar las órdenes con el estado 'En el taller'
-    en_taller = sum(1 for orden in ordenes if orden.get_estado_display() == 'Ingresar al taller')
+    en_taller = sum(1 for orden in ordenes if orden.get_estado_display() == 'En el taller')
 
     # Contar las órdenes cuyo estado no es 'Entregado'
     activas = sum(1 for orden in ordenes if orden.get_estado_display() != 'Entregado')
