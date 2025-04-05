@@ -25,7 +25,9 @@
 
 .orden-pagada p{
     color: rgb(5, 150, 105);
+    margin-bottom: 0;
 }
 .orden-no-pagada p{
     color: rgb(239, 68, 68);
+    margin-bottom: 0;
 }
