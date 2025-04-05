@@ -24,11 +24,11 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Vehículo</th>
                 <th scope="col">Cliente</th>
+                <th scope="col">Vehículo</th>
                 <th scope="col">Cobertura</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Pago</th>
                 <th scope="col">Creación</th>
                 <th scope="col">Detalles</th>
             </tr>
@@ -36,11 +36,11 @@
         <tbody>
             {% for orden in ordenesActivas %}
                 <tr>
-                    <th scope="row">{{ orden.codigo }}</th>
+                    <th scope="row">{{ orden.cliente }}</th>
                     <td>{{ orden.vehiculo }}</td>
-                    <td>{{ orden.cliente }}</td>
                     <td>{{ orden.cobertura }}</td>
                     <td class="estado-orden {% if orden.get_estado_display != 'Entregado' %}orden-activa{% else %}orden-terminada{% endif %}"><span>{{ orden.get_estado_display }}</span></td>
+                    <td class='{% if orden.monto_restante == 'Pago completo' %}orden-pagada{%else%}orden-no-pagada{% endif %}'><p>{{ orden.monto_restante }}</p></td>
                     <td>{{ orden.created|date:'d/m/Y' }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>
@@ -53,11 +53,11 @@
     <table class="table table-striped mt-5">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Vehículo</th>
                 <th scope="col">Cliente</th>
+                <th scope="col">Vehículo</th>
                 <th scope="col">Cobertura</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Pago</th>
                 <th scope="col">Creación</th>
                 <th scope="col">Detalles</th>
             </tr>
@@ -65,11 +65,11 @@
         <tbody>
             {% for orden in ordenesTerminadas %}
                 <tr>
-                    <th scope="row">{{ orden.codigo }}</th>
+                    <th scope="row">{{ orden.cliente }}</th>
                     <td>{{ orden.vehiculo }}</td>
-                    <td>{{ orden.cliente }}</td>
                     <td>{{ orden.cobertura }}</td>
                     <td class="estado-orden {% if orden.get_estado_display != 'Entregado' %}orden-activa{% else %}orden-terminada{% endif %}"><span>{{ orden.get_estado_display }}</span></td>
+                    <td class='{% if orden.monto_restante == 'Pago completo' %}orden-pagada{%else%}orden-no-pagada{% endif %}'><p>{{ orden.monto_restante }}</p></td>
                     <td>{{ orden.created|date:'d/m/Y' }}</td>
                     <td><a href="{% url 'orden:detail' orden.codigo %}" class="link-offset-2 link-underline link-underline-opacity-0">Ver detalles</a></td>
                 </tr>

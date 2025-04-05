@@ -22,3 +22,10 @@
     border-color: rgb(5, 150, 105);
     background-color: rgb(240, 253, 244);
 }
+
+.orden-pagada p{
+    color: rgb(5, 150, 105);
+}
+.orden-no-pagada p{
+    color: rgb(239, 68, 68);
+}

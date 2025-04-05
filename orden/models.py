@@ -16,6 +16,14 @@ class OrdenBase(models.Model):
     class Meta:
         abstract = True  # Esto hará que esta clase sea abstracta y no genere una tabla en la base de datos
 
+    def monto_restante(self):
+        presupuesto = self.obtener_presupuesto()
+        if presupuesto:
+            restante = presupuesto.monto - sum(pago.monto for pago in self.obtener_pagos())
+            if restante <= 0:
+                return 'Pago completo'
+            return f"${restante:,.2f}".replace(",", ".")
+        return 'No presupuestado'
 
     def es_entregado(self):
         return self.estado == self.ESTADOS_CHOICES[-1][0]  # Obtiene la clave del último estado
