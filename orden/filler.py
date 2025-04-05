@@ -1,16 +1,27 @@
 import datetime
 import os
-from fillpdf import fillpdfs
-from django.core.files import File
 import textwrap
+
+from django.conf import settings
+from django.core.files import File
+from fillpdf import fillpdfs
+
 
 def dividir_texto(texto, max_length=84):
     """Divide el texto en líneas de máximo `max_length` caracteres, cortando con un guion si es necesario."""
     lineas = textwrap.wrap(texto, width=max_length, break_long_words=True)
     return [linea + "-" if i < len(lineas) - 1 else linea for i, linea in enumerate(lineas)]
 
+
 def rellenar_pdf(orden, presupuesto):
-    form_fields = list(fillpdfs.get_form_fields('static/presupuesto.pdf').keys())
+    # Ruta absoluta al PDF plantilla
+    plantilla_pdf = os.path.join(settings.BASE_DIR, 'static', 'presupuesto.pdf')
+
+    # Verifica si existe
+    if not os.path.exists(plantilla_pdf):
+        raise FileNotFoundError(f"No se encontró la plantilla PDF en: {plantilla_pdf}")
+
+    form_fields = list(fillpdfs.get_form_fields(plantilla_pdf).keys())
 
     # Datos del PDF
     fecha = datetime.datetime.today().strftime("%d/%m/%Y")
@@ -56,15 +67,18 @@ def rellenar_pdf(orden, presupuesto):
     for i in range(11):
         data_dict[form_fields[13 + i]] = lineas_pdf[i] if i < len(lineas_pdf) else ""
 
-    # Ruta de guardado
+    # Crear la ruta absoluta de guardado
     pdf_filename = f"{cliente}_{orden.codigo}.pdf"
-    pdf_path = os.path.join("media/presupuestos", pdf_filename)
+    output_dir = os.path.join(settings.MEDIA_ROOT, 'presupuestos')
+    os.makedirs(output_dir, exist_ok=True)  # Crea la carpeta si no existe
+
+    pdf_path = os.path.join(output_dir, pdf_filename)
 
     # Llenar y guardar el PDF
-    fillpdfs.write_fillable_pdf("static/presupuesto.pdf", pdf_path, data_dict)
+    fillpdfs.write_fillable_pdf(plantilla_pdf, pdf_path, data_dict)
 
     # Guardar en el modelo Presupuesto
     with open(pdf_path, "rb") as f:
-        presupuesto.archivo_pdf.save(pdf_filename, File(f))
+        presupuesto.archivo_pdf.save(pdf_filename, File(f), save=True)
 
     return presupuesto.archivo_pdf.url
