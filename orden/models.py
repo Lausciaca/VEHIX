@@ -69,9 +69,9 @@ class OrdenBase(models.Model):
 
 class OrdenParticular(OrdenBase):
     ESTADOS_CHOICES = [
-        ('1', 'Presupuesto'),
-        ('2', 'Enviar a cliente'),
-        ('3', 'Acordar turno'),
+        ('1', 'Enviar presupuesto al cliente'),
+        ('2', 'Acordar turno'),
+        ('3', 'Esperando ingreso'),
         ('4', 'En el taller'),
         ('5', 'Entregado'),
     ]
@@ -118,11 +118,12 @@ class OrdenTerceros(OrdenBase):
         
 class OrdenRiesgo(OrdenBase):
     ESTADOS_CHOICES = [
-        ('1', 'Presupuesto'),
-        ('2', 'Enviar a seguro'),
+        ('1', 'Enviar presupuesto al seguro'),
+        ('2', 'Esperando respuesta'),
         ('3', 'Acordar turno'),
-        ('4', 'En el taller'),
-        ('5', 'Entregado'),
+        ('4', 'Espeando ingreso'),
+        ('5', 'En el taller'),
+        ('6', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
     cobertura = 'Todo riesgo'
@@ -143,11 +144,12 @@ class OrdenRiesgo(OrdenBase):
 class OrdenRecupero(OrdenBase):
     ESTADOS_CHOICES = [
         ('1', 'Solicitar documentacion'),
-        ('2', 'Enviar carpeta'),
-        ('3', 'Recibir y enviar poder firmado'),
-        ('4', 'Acordar turno'),
-        ('5', 'En el taller'),
-        ('6', 'Entregado'),
+        ('2', 'Preparar poder'),
+        ('3', 'Firmar y enviar poder'),
+        ('4', 'Esperando respuesta'),
+        ('5', 'Acordar turno'),
+        ('6', 'En el taller'),
+        ('7', 'Entregado'),
     ]
     estado = models.CharField(max_length=50, choices=ESTADOS_CHOICES, verbose_name='Estado', blank=True, null=True)
     cobertura = 'Recupero de siniestro'
