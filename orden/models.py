@@ -3,6 +3,8 @@ from cliente.models import Cliente
 from vehiculo.models import Vehiculo
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.db import IntegrityError
+from django.db.models import Max
         
         
         
@@ -136,9 +138,15 @@ class OrdenRiesgo(OrdenBase):
         return f"{self.vehiculo} de {self.cliente} - Todo riesgo"
 
     def save(self, *args, **kwargs):
-        if not self.codigo:  # Solo generar código si no existe
-            ultimo_id = OrdenRiesgo.objects.count() + 1  # Sumar 1 al último ID
-            self.codigo = f"ORD-3-{ultimo_id:05d}"
+        if not self.codigo:
+            for _ in range(5):
+                ultimo_id = OrdenRiesgo.objects.aggregate(max_id=Max('id'))['max_id'] or 0
+                nuevo_codigo = f"ORD-3-{ultimo_id + 1:05d}"
+                if not OrdenRiesgo.objects.filter(codigo=nuevo_codigo).exists():
+                    self.codigo = nuevo_codigo
+                    break
+            else:
+                raise ValueError("No se pudo generar un código único")
         super().save(*args, **kwargs)
 
 class OrdenRecupero(OrdenBase):
