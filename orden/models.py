@@ -88,11 +88,17 @@ class OrdenParticular(OrdenBase):
         return f"{self.vehiculo} de {self.cliente} - Particular"
 
     def save(self, *args, **kwargs):
-        if not self.codigo:  # Solo generar código si no existe
-            ultimo_id = OrdenParticular.objects.count() + 1  # Sumar 1 al último ID
-            self.codigo = f"ORD-1-{ultimo_id:05d}"
+        if not self.codigo:
+            for _ in range(5):
+                ultimo_id = OrdenParticulars.objects.aggregate(max_id=Max('id'))['max_id'] or 0
+                nuevo_codigo = f"ORD-1-{ultimo_id + 1:05d}"
+                if not OrdenParticulars.objects.filter(codigo=nuevo_codigo).exists():
+                    self.codigo = nuevo_codigo
+                    break
+            else:
+                raise ValueError("No se pudo generar un código único")
         super().save(*args, **kwargs)
-        
+            
         
 class OrdenTerceros(OrdenBase):
     ESTADOS_CHOICES = [
@@ -113,9 +119,15 @@ class OrdenTerceros(OrdenBase):
         return f"{self.vehiculo} de {self.cliente} - Contra terceros"
 
     def save(self, *args, **kwargs):
-        if not self.codigo:  # Solo generar código si no existe
-            ultimo_id = OrdenTerceros.objects.count() + 1  # Sumar 1 al último ID
-            self.codigo = f"ORD-2-{ultimo_id:05d}"
+        if not self.codigo:
+            for _ in range(5):
+                ultimo_id = OrdenTerceros.objects.aggregate(max_id=Max('id'))['max_id'] or 0
+                nuevo_codigo = f"ORD-2-{ultimo_id + 1:05d}"
+                if not OrdenTerceros.objects.filter(codigo=nuevo_codigo).exists():
+                    self.codigo = nuevo_codigo
+                    break
+            else:
+                raise ValueError("No se pudo generar un código único")
         super().save(*args, **kwargs)
         
 class OrdenRiesgo(OrdenBase):
@@ -169,11 +181,17 @@ class OrdenRecupero(OrdenBase):
 
     def __str__(self):
         return f"{self.vehiculo} de {self.cliente} - Recupero de siniestro"
-
+    
     def save(self, *args, **kwargs):
-        if not self.codigo:  # Solo generar código si no existe
-            ultimo_id = OrdenRecupero.objects.count() + 1  # Sumar 1 al último ID
-            self.codigo = f"ORD-4-{ultimo_id:05d}"
+        if not self.codigo:
+            for _ in range(5):
+                ultimo_id = OrdenRecupero.objects.aggregate(max_id=Max('id'))['max_id'] or 0
+                nuevo_codigo = f"ORD-4-{ultimo_id + 1:05d}"
+                if not OrdenRecupero.objects.filter(codigo=nuevo_codigo).exists():
+                    self.codigo = nuevo_codigo
+                    break
+            else:
+                raise ValueError("No se pudo generar un código único")
         super().save(*args, **kwargs)
         
         
