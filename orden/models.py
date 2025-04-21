@@ -90,9 +90,9 @@ class OrdenParticular(OrdenBase):
     def save(self, *args, **kwargs):
         if not self.codigo:
             for _ in range(5):
-                ultimo_id = OrdenParticulars.objects.aggregate(max_id=Max('id'))['max_id'] or 0
+                ultimo_id = OrdenParticular.objects.aggregate(max_id=Max('id'))['max_id'] or 0
                 nuevo_codigo = f"ORD-1-{ultimo_id + 1:05d}"
-                if not OrdenParticulars.objects.filter(codigo=nuevo_codigo).exists():
+                if not OrdenParticular.objects.filter(codigo=nuevo_codigo).exists():
                     self.codigo = nuevo_codigo
                     break
             else:
